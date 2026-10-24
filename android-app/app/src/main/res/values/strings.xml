@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PaperGenius AI</string>
+    <string name="app_tagline">Turn Textbook Pages into Exam-Ready Question Papers</string>
+</resources>

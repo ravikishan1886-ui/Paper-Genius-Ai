@@ -1,0 +1,6 @@
+{
+  "name": "PaperGenius AI",
+  "description": "Turn textbook page photos into exam-ready CBSE, PSEB, and ICSE question papers and answer keys with AI vision.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

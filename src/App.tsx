@@ -1,0 +1,163 @@
+import React, { useState, useEffect } from 'react';
+import { Navbar } from './components/Navbar';
+import { HomeHero } from './components/HomeHero';
+import { GeneratorForm } from './components/GeneratorForm';
+import { PaperPreview } from './components/PaperPreview';
+import { MyPapersDashboard } from './components/MyPapersDashboard';
+import { FeaturesView } from './components/FeaturesView';
+import { AboutView } from './components/AboutView';
+import { GeneratedPaper } from './types/paper';
+import { getSavedPapers, savePaper } from './utils/storage';
+import { DEMO_PREGENERATED_PAPER } from './data/sampleData';
+import { Sparkles, Heart } from 'lucide-react';
+
+type ViewType = 'home' | 'generator' | 'preview' | 'my-papers' | 'features' | 'about';
+
+export default function App() {
+  const [currentView, setCurrentView] = useState<ViewType>('home');
+  const [activePaper, setActivePaper] = useState<GeneratedPaper | null>(null);
+  const [savedCount, setSavedCount] = useState<number>(0);
+
+  // Load saved count on mount
+  useEffect(() => {
+    const list = getSavedPapers();
+    setSavedCount(list.length);
+  }, [currentView]);
+
+  const handleNavigate = (view: ViewType) => {
+    setCurrentView(view);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePaperGenerated = (paper: GeneratedPaper) => {
+    setActivePaper(paper);
+    savePaper(paper);
+    const updated = getSavedPapers();
+    setSavedCount(updated.length);
+    setCurrentView('preview');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleLoadSample = () => {
+    setActivePaper(DEMO_PREGENERATED_PAPER);
+    setCurrentView('preview');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSelectPaperFromDashboard = (paper: GeneratedPaper) => {
+    setActivePaper(paper);
+    setCurrentView('preview');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-indigo-500 selection:text-white">
+      {/* Navigation */}
+      <Navbar
+        currentView={currentView}
+        onNavigate={handleNavigate}
+        savedPapersCount={savedCount}
+        hasActivePaper={Boolean(activePaper)}
+      />
+
+      {/* Main Content Area */}
+      <main className="flex-1">
+        {currentView === 'home' && (
+          <HomeHero
+            onStartGenerator={() => handleNavigate('generator')}
+            onExploreFeatures={() => handleNavigate('features')}
+            onLoadSamplePaper={handleLoadSample}
+          />
+        )}
+
+        {currentView === 'generator' && (
+          <GeneratorForm onPaperGenerated={handlePaperGenerated} />
+        )}
+
+        {currentView === 'preview' && activePaper && (
+          <PaperPreview
+            paper={activePaper}
+            onUpdatePaper={(updated) => setActivePaper(updated)}
+            onBackToGenerator={() => handleNavigate('generator')}
+          />
+        )}
+
+        {currentView === 'my-papers' && (
+          <MyPapersDashboard
+            onSelectPaper={handleSelectPaperFromDashboard}
+            onStartGenerator={() => handleNavigate('generator')}
+          />
+        )}
+
+        {currentView === 'features' && (
+          <FeaturesView onStartGenerator={() => handleNavigate('generator')} />
+        )}
+
+        {currentView === 'about' && <AboutView />}
+      </main>
+
+      {/* Footer */}
+      <footer className="no-print bg-white border-t border-slate-200 py-10 mt-16 text-slate-600 text-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-6 border-b border-slate-100">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white font-bold shadow-xs">
+                <Sparkles className="w-4 h-4 text-amber-300" />
+              </div>
+              <div>
+                <span className="font-extrabold text-slate-900 text-sm">
+                  PaperGenius <span className="text-indigo-600">AI</span>
+                </span>
+                <p className="text-[11px] text-slate-400">
+                  Turn Textbook Pages into Exam-Ready Question Papers
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-6 font-semibold">
+              <button
+                onClick={() => handleNavigate('home')}
+                className="hover:text-indigo-600 transition-colors"
+              >
+                Home
+              </button>
+              <button
+                onClick={() => handleNavigate('generator')}
+                className="hover:text-indigo-600 transition-colors"
+              >
+                Generate Paper
+              </button>
+              <button
+                onClick={() => handleNavigate('my-papers')}
+                className="hover:text-indigo-600 transition-colors"
+              >
+                My Papers
+              </button>
+              <button
+                onClick={() => handleNavigate('features')}
+                className="hover:text-indigo-600 transition-colors"
+              >
+                Features
+              </button>
+              <button
+                onClick={() => handleNavigate('about')}
+                className="hover:text-indigo-600 transition-colors"
+              >
+                About
+              </button>
+            </div>
+          </div>
+
+          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-400">
+            <p>
+              © {new Date().getFullYear()} PaperGenius AI. Designed for CBSE, PSEB, and ICSE schools & educators.
+            </p>
+            <p className="flex items-center gap-1">
+              Crafted with intelligent vision OCR & marks allocation engine.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
