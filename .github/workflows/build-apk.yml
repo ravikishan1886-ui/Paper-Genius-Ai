@@ -25,36 +25,14 @@ jobs:
       - name: Verify Java environment
         run: |
           java -version
-          echo "JAVA_HOME is $JAVA_HOME"
-          JAVA_MAJOR=$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}' | cut -d'.' -f1)
-          if [ "$JAVA_MAJOR" -lt 17 ]; then
-            echo "Error: Java major version must be 17 or higher (detected: $JAVA_MAJOR)"
-            exit 1
-          fi
-          echo "Java version verified: $JAVA_MAJOR >= 17"
-
-      - name: Locate Android project directory
-        id: locate-project
-        run: |
-          if [ -f "android-app/gradlew" ]; then
-            echo "project_dir=android-app" >> $GITHUB_OUTPUT
-            echo "Found Android project inside android-app/"
-          elif [ -f "gradlew" ]; then
-            echo "project_dir=." >> $GITHUB_OUTPUT
-            echo "Found Android project at repository root"
-          else
-            echo "Error: No gradlew wrapper found."
-            exit 1
-          fi
+          echo "JAVA_HOME=$JAVA_HOME"
 
       - name: Create temporary debug keystore
         run: |
-          PROJ_DIR="${{ steps.locate-project.outputs.project_dir }}"
-          KEYSTORE_PATH="$PROJ_DIR/debug.keystore"
-          if [ ! -f "$KEYSTORE_PATH" ]; then
-            echo "Generating temporary debug keystore at $KEYSTORE_PATH..."
+          mkdir -p ~/.android
+          if [ ! -f "./debug.keystore" ]; then
             keytool -genkey -v \
-              -keystore "$KEYSTORE_PATH" \
+              -keystore ./debug.keystore \
               -storepass android \
               -alias androiddebugkey \
               -keypass android \
@@ -62,67 +40,46 @@ jobs:
               -keysize 2048 \
               -validity 10000 \
               -dname "CN=Android Debug,O=Android,C=US"
-          else
-            echo "Debug keystore already exists at $KEYSTORE_PATH"
           fi
-
-          if [ ! -f "$KEYSTORE_PATH" ]; then
-            echo "Error: Failed to create $KEYSTORE_PATH"
-            exit 1
+          cp ./debug.keystore ~/.android/debug.keystore
+          if [ -d "android-app" ]; then
+            cp ./debug.keystore android-app/debug.keystore
           fi
-
-          # Also configure user home debug keystore so Android Gradle Plugin finds it automatically
-          mkdir -p ~/.android
-          cp "$KEYSTORE_PATH" ~/.android/debug.keystore
           echo "Debug keystore configured successfully."
 
       - name: Make Gradle wrapper executable
         run: |
-          PROJ_DIR="${{ steps.locate-project.outputs.project_dir }}"
-          chmod +x "$PROJ_DIR/gradlew"
+          chmod +x ./gradlew 2>/dev/null || true
+          chmod +x android-app/gradlew 2>/dev/null || true
 
-      - name: Clean stale caches
+      - name: Build debug APK with Gradle
         run: |
-          PROJ_DIR="${{ steps.locate-project.outputs.project_dir }}"
-          rm -rf "$PROJ_DIR/.gradle"
-          rm -rf "$PROJ_DIR/app/build"
-
-      - name: Build Debug APK with Gradle
-        run: |
-          PROJ_DIR="${{ steps.locate-project.outputs.project_dir }}"
-          cd "$PROJ_DIR"
-          ./gradlew :app:assembleDebug --stacktrace --no-daemon
-
-      - name: Verify generated APK
-        id: verify-apk
-        run: |
-          PROJ_DIR="${{ steps.locate-project.outputs.project_dir }}"
-          APK_FILE="$PROJ_DIR/app/build/outputs/apk/debug/app-debug.apk"
-          
-          if [ -f "$APK_FILE" ]; then
-            echo "APK found at primary path: $APK_FILE"
-            echo "apk_path=$APK_FILE" >> $GITHUB_OUTPUT
-          else
-            echo "Searching for generated APK files..."
-            FOUND_APK=$(find "$PROJ_DIR" -type f -name "*.apk" | grep -i "debug" | head -n 1)
-            if [ -n "$FOUND_APK" ] && [ -f "$FOUND_APK" ]; then
-              echo "Discovered APK at: $FOUND_APK"
-              mkdir -p "$PROJ_DIR/app/build/outputs/apk/debug"
-              cp "$FOUND_APK" "$APK_FILE"
-              echo "apk_path=$APK_FILE" >> $GITHUB_OUTPUT
-            else
-              echo "Error: No debug APK generated."
-              find "$PROJ_DIR" -name "*.apk" 2>/dev/null || true
-              exit 1
-            fi
+          if [ -f "./gradlew" ]; then
+            ./gradlew :app:assembleDebug --stacktrace --no-daemon
+          elif [ -f "android-app/gradlew" ]; then
+            cd android-app
+            ./gradlew :app:assembleDebug --stacktrace --no-daemon
+            cd ..
           fi
-          
-          ls -lh "${{ steps.locate-project.outputs.project_dir }}/app/build/outputs/apk/debug/app-debug.apk"
 
-      - name: Upload APK Artifact
+      - name: Verify and place APK
+        run: |
+          mkdir -p app/build/outputs/apk/debug
+          APK_PATH=$(find . -name "*.apk" | grep -i "debug" | head -n 1)
+          if [ -n "$APK_PATH" ] && [ -f "$APK_PATH" ]; then
+            echo "Found APK at: $APK_PATH"
+            cp "$APK_PATH" app/build/outputs/apk/debug/app-debug.apk
+            ls -lh app/build/outputs/apk/debug/app-debug.apk
+          else
+            echo "Error: Debug APK was not generated."
+            find . -name "*.apk" || true
+            exit 1
+          fi
+
+      - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: ${{ steps.verify-apk.outputs.apk_path }}
+          path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
