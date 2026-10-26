@@ -6,9 +6,6 @@ on:
       - main
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
   build:
     name: Build Debug APK
@@ -29,25 +26,24 @@ jobs:
         run: |
           java -version
           echo "JAVA_HOME=$JAVA_HOME"
-
-      - name: Configure Android SDK environment
-        run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          # Remove any invalid local.properties
-          rm -f local.properties android-app/local.properties
-          
-          # Create valid local.properties with runner's SDK location
-          echo "sdk.dir=$ANDROID_HOME" > local.properties
-          if [ -d "android-app" ]; then
-            echo "sdk.dir=$ANDROID_HOME" > android-app/local.properties
+          JAVA_MAJOR=$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}' | awk -F '.' '{print $1}')
+          if [ "$JAVA_MAJOR" -lt 17 ]; then
+            echo "ERROR: Java major version is $JAVA_MAJOR, which is lower than 17."
+            exit 1
           fi
+          echo "Java major version ($JAVA_MAJOR) is 17 or newer."
+
+      - name: Set up Gradle 9.3.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.3.1"
 
       - name: Create temporary debug keystore
         run: |
-          mkdir -p ~/.android
-          if [ ! -f "~/.android/debug.keystore" ]; then
+          if [ ! -f "./debug.keystore" ]; then
+            echo "Generating debug keystore..."
             keytool -genkey -v \
-              -keystore ~/.android/debug.keystore \
+              -keystore ./debug.keystore \
               -storepass android \
               -alias androiddebugkey \
               -keypass android \
@@ -55,42 +51,34 @@ jobs:
               -keysize 2048 \
               -validity 10000 \
               -dname "CN=Android Debug,O=Android,C=US"
-          fi
-          
-          cp ~/.android/debug.keystore ./debug.keystore
-          if [ -d "android-app" ]; then
-            cp ~/.android/debug.keystore android-app/debug.keystore
-          fi
-          echo "Debug keystore configured successfully."
-
-      - name: Build Debug APK
-        run: |
-          chmod +x ./gradlew 2>/dev/null || true
-          chmod +x android-app/gradlew 2>/dev/null || true
-          
-          if [ -d "android-app" ] && [ -f "android-app/gradlew" ]; then
-            echo "Building inside android-app directory..."
-            cd android-app
-            ./gradlew :app:assembleDebug --stacktrace --no-daemon
-            cd ..
-          elif [ -f "./gradlew" ]; then
-            echo "Building at root directory..."
-            ./gradlew :app:assembleDebug --stacktrace --no-daemon
-          fi
-
-      - name: Verify and place APK
-        run: |
-          mkdir -p app/build/outputs/apk/debug
-          APK_FILE=$(find . -name "*.apk" 2>/dev/null | grep -i "debug" | head -n 1)
-          if [ -n "$APK_FILE" ] && [ -f "$APK_FILE" ]; then
-            echo "Discovered APK at: $APK_FILE"
-            cp "$APK_FILE" app/build/outputs/apk/debug/app-debug.apk
-            ls -lh app/build/outputs/apk/debug/app-debug.apk
           else
-            echo "ERROR: Debug APK file was not produced."
-            find . -name "*.apk" 2>/dev/null || true
+            echo "debug.keystore already exists."
+          fi
+          if [ ! -f "./debug.keystore" ]; then
+            echo "ERROR: debug.keystore could not be created."
             exit 1
           fi
+          echo "debug.keystore confirmed."
+
+      - name: Build Debug APK
+        run: gradle :app:assembleDebug --stacktrace --no-daemon
+
+      - name: Verify APK exists
+        run: |
+          if [ ! -f "app/build/outputs/apk/debug/app-debug.apk" ]; then
+            echo "app/build/outputs/apk/debug/app-debug.apk not found at exact path. Searching app/build/outputs/apk..."
+            mkdir -p app/build/outputs/apk/debug
+            DISCOVERED_APK=$(find app/build/outputs/apk -name "*debug*.apk" 2>/dev/null | head -n 1)
+            if [ -n "$DISCOVERED_APK" ] && [ -f "$DISCOVERED_APK" ]; then
+              echo "Discovered APK: $DISCOVERED_APK"
+              cp "$DISCOVERED_APK" app/build/outputs/apk/debug/app-debug.apk
+            else
+              echo "ERROR: No debug APK discovered in app/build/outputs/apk"
+              find . -name "*.apk" 2>/dev/null || true
+              exit 1
+            fi
+          fi
+          ls -lh app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
@@ -98,4 +86,3 @@ jobs:
           name: app-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
-          retention-days: 30

@@ -96,7 +96,8 @@ object PaperPdfExporter {
         }
 
         // --- Header ---
-        canvas.drawText(paper.schoolName.uppercase(), PAGE_WIDTH / 2f, y + 10f, headerPaint)
+        val schoolTitle = (paper.schoolName ?: "EXAMINATION PAPER").uppercase()
+        canvas.drawText(schoolTitle, PAGE_WIDTH / 2f, y + 10f, headerPaint)
         y += 24f
 
         canvas.drawText("${paper.examType.displayName.uppercase()} (2024-25)", PAGE_WIDTH / 2f, y, subHeaderPaint)
@@ -140,8 +141,8 @@ object PaperPdfExporter {
             checkPageBreak(50f)
             canvas.drawText("${section.name.uppercase()} (${section.totalMarks} Marks)", MARGIN, y, sectionPaint)
             y += 14f
-            if (section.instructions.isNotBlank()) {
-                canvas.drawText(section.instructions, MARGIN, y, textPaint)
+            if (!section.instructions.isNullOrBlank()) {
+                canvas.drawText(section.instructions!!, MARGIN, y, textPaint)
                 y += 16f
             }
 
@@ -168,11 +169,12 @@ object PaperPdfExporter {
                 }
 
                 // If MCQ, render options
-                if (question.type == QuestionType.MCQ && !question.options.isNullOrEmpty()) {
+                val qOpts = question.options
+                if (question.type == QuestionType.MCQ && !qOpts.isNullOrEmpty()) {
                     val optionLetters = listOf("(A)", "(B)", "(C)", "(D)")
-                    for (i in question.options.indices) {
+                    for (i in qOpts.indices) {
                         checkPageBreak(14f)
-                        val optText = "${optionLetters.getOrElse(i) { "($i)" }} ${question.options[i]}"
+                        val optText = "${optionLetters.getOrElse(i) { "($i)" }} ${qOpts[i]}"
                         val optLines = wrapText(optText, textPaint, CONTENT_WIDTH - 50f)
                         for (optLine in optLines) {
                             checkPageBreak(14f)

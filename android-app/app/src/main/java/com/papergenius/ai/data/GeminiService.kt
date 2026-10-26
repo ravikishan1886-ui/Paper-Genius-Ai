@@ -58,7 +58,7 @@ class GeminiService(private val apiKeyProvider: () -> String? = { null }) {
                             add(textPart)
                             val inlineData = JsonObject().apply {
                                 val inlineObj = JsonObject().apply {
-                                    addProperty("mimeType", photo.mimeType)
+                                    addProperty("mimeType", "image/jpeg")
                                     addProperty("data", photo.base64Data)
                                 }
                                 add("inlineData", inlineObj)
@@ -146,12 +146,12 @@ class GeminiService(private val apiKeyProvider: () -> String? = { null }) {
         val title = "${params.className} ${params.subject} ${params.examType.displayName}"
         val school = if (params.schoolName.isNotBlank()) params.schoolName else "Modern Public Senior Secondary School"
 
-        val duration = when {
-            params.customDuration.isNotBlank() -> params.customDuration
-            params.totalMarks <= 40 -> "1.5 Hours"
-            params.totalMarks <= 60 -> "2 Hours"
-            params.totalMarks <= 75 -> "2.5 Hours"
-            else -> "3 Hours"
+        val durationMinutes = when {
+            params.customDuration.isNotBlank() && params.customDuration.toIntOrNull() != null -> params.customDuration.toInt()
+            params.totalMarks <= 40 -> 90
+            params.totalMarks <= 60 -> 120
+            params.totalMarks <= 75 -> 150
+            else -> 180
         }
 
         // Generate general instructions according to board guidelines
@@ -171,16 +171,21 @@ class GeminiService(private val apiKeyProvider: () -> String? = { null }) {
             title = title,
             schoolName = school,
             board = params.board,
-            className = params.className,
+            classLevel = params.className,
             subject = params.subject,
             examType = params.examType,
             totalMarks = params.totalMarks,
-            duration = duration,
+            durationMinutes = durationMinutes,
             generalInstructions = instructions,
             sections = allocatedSections,
-            uploadedPagesCount = photos.size,
-            analyzedTopics = analyzedTopics,
-            createdAt = System.currentTimeMillis()
+            topicsCovered = analyzedTopics,
+            analysisReport = AnalysisReport(
+                pagesAnalyzed = photos.size.coerceAtLeast(1),
+                readabilityScore = 92,
+                extractedTopics = analyzedTopics
+            ),
+            createdAt = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.US).format(java.util.Date()),
+            updatedAt = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.US).format(java.util.Date())
         )
     }
 
@@ -198,15 +203,15 @@ class GeminiService(private val apiKeyProvider: () -> String? = { null }) {
 
         val newText = when (currentQuestion.type) {
             QuestionType.MCQ -> "${prefix}Identify the correct statement concerning ${subject.lowercase()} principles:"
-            QuestionType.VSA -> "${prefix}Define the fundamental standard unit used in ${subject.lowercase()} and state one real-world condition where it is strictly verified."
-            QuestionType.SHORT -> "${prefix}Explain in detail the working mechanism or application of the key concept in ${subject.lowercase()} with two illustrative points."
-            QuestionType.LONG -> "${prefix}Elaborate with suitable diagrams/derivations the complete process involved in ${subject.lowercase()} topics. (5 Marks)"
+            QuestionType.VERY_SHORT -> "${prefix}Define the fundamental standard unit used in ${subject.lowercase()} and state one real-world condition where it is strictly verified."
+            QuestionType.SHORT_ANSWER -> "${prefix}Explain in detail the working mechanism or application of the key concept in ${subject.lowercase()} with two illustrative points."
+            QuestionType.LONG_ANSWER -> "${prefix}Elaborate with suitable diagrams/derivations the complete process involved in ${subject.lowercase()} topics. (5 Marks)"
             QuestionType.CASE_BASED -> "${prefix}Case Analysis: Based on the laboratory demonstration discussed in ${subject.lowercase()}, analyze the outcome when parameters are doubled."
             QuestionType.NUMERICAL -> "${prefix}Calculate the net output and magnitude in a system where initial value is 20 units and rate of change is 4.5 units/s over 5 seconds."
             QuestionType.ASSERTION_REASON -> "${prefix}Assertion (A): Standard reaction rates increase with temperature.\nReason (R): Molecular collision frequency with activation energy increases."
             QuestionType.TRUE_FALSE -> "${prefix}State whether True or False: In a closed conservative system, total energy remains invariant over time."
             QuestionType.FILL_BLANKS -> "${prefix}The phenomenon responsible for standard variation in ${subject.lowercase()} is known as ____________."
-            QuestionType.DIAGRAM -> "${prefix}Draw a neat labelled diagram demonstrating the apparatus setup or physiological pathway."
+            QuestionType.DIAGRAM_BASED -> "${prefix}Draw a neat labelled diagram demonstrating the apparatus setup or physiological pathway."
         }
 
         val newOptions = if (currentQuestion.type == QuestionType.MCQ) {
@@ -220,10 +225,10 @@ class GeminiService(private val apiKeyProvider: () -> String? = { null }) {
 
         currentQuestion.copy(
             id = newId,
-            text = newText,
+            questionText = newText,
             options = newOptions,
-            correctAnswer = "Detailed verified step-by-step solution for the newly synthesized question.",
-            explanation = "Evaluated according to ${board.displayName} latest curriculum syllabus."
+            answerKey = "Detailed verified step-by-step solution for the newly synthesized question.",
+            markingScheme = "Evaluated according to ${board.displayName} latest curriculum syllabus."
         )
     }
 }

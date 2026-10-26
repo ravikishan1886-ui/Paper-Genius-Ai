@@ -119,9 +119,15 @@ fun MyPapersScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(papers, key = { it.id }) { paper ->
+                    val dateStr = when (val c = paper.createdAt) {
+                        is Long -> dateFormat.format(Date(c))
+                        is Number -> dateFormat.format(Date(c.toLong()))
+                        is String -> c.ifBlank { "Recent" }
+                        else -> "Recent"
+                    }
                     PaperListItem(
                         paper = paper,
-                        formattedDate = dateFormat.format(Date(paper.createdAt)),
+                        formattedDate = dateStr,
                         onSelect = {
                             viewModel.selectPaper(paper)
                             onNavigate(AppScreen.PREVIEW)
@@ -178,7 +184,7 @@ fun PaperListItem(
                         maxLines = 1
                     )
                     Text(
-                        text = "${paper.schoolName} • ${paper.duration}",
+                        text = "${paper.schoolName ?: "Examination"} • ${paper.durationMinutes} mins",
                         fontSize = 12.sp,
                         color = TextSecondary,
                         maxLines = 1

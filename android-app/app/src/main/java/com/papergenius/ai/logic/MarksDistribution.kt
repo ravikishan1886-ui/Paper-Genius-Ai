@@ -117,6 +117,59 @@ object MarksDistribution {
         }
     }
 
+    fun allocateSections(
+        board: EducationBoard,
+        totalMarks: Int,
+        selectedTypes: List<QuestionType>,
+        subject: String
+    ): List<PaperSection> {
+        val plan = generateSectionPlan(totalMarks, board, selectedTypes)
+        var qNum = 1
+        return plan.map { p ->
+            val questions = (1..p.questionCount).map {
+                val currentQNum = qNum++
+                val qType = p.questionType
+                val qMarks = p.marksPerQuestion
+                val text = when (qType) {
+                    QuestionType.MCQ -> "Which of the following statements is correct regarding standard $subject principles?"
+                    QuestionType.VERY_SHORT -> "Define the fundamental concept of $subject and give one practical example."
+                    QuestionType.SHORT_ANSWER -> "Explain the key mechanism observed in $subject with two distinct scientific points."
+                    QuestionType.LONG_ANSWER -> "Discuss in detail the process and applications in $subject. Illustrate your answer with suitable steps."
+                    QuestionType.CASE_BASED -> "Read the case context: In an experimental investigation on $subject, analyze the changes and deduce the expected result."
+                    QuestionType.ASSERTION_REASON -> "Assertion (A): Fundamental properties remain invariant in steady state.\nReason (R): Equilibrium condition holds throughout the closed process."
+                    QuestionType.TRUE_FALSE -> "State whether True or False: Conservation of energy holds strictly in all verified physical systems."
+                    QuestionType.FILL_BLANKS -> "The standard unit measuring efficiency in $subject is ________."
+                    QuestionType.NUMERICAL -> "Calculate the total work done and final value given initial parameters of 15.0 units with 2.5 multiplier."
+                    QuestionType.DIAGRAM_BASED -> "Draw a neat, well-labelled diagram showing the functional structure in $subject."
+                }
+                val opts = if (qType == QuestionType.MCQ) {
+                    listOf("Option A: Uniform and proportional", "Option B: Inversely related", "Option C: Constant invariant", "Option D: Dependent variable")
+                } else null
+
+                QuestionItem(
+                    id = java.util.UUID.randomUUID().toString(),
+                    questionNumber = currentQNum,
+                    type = qType,
+                    sectionName = p.name,
+                    questionText = text,
+                    marks = qMarks,
+                    options = opts,
+                    answerKey = "Standard answer key and verified solution step for Question $currentQNum.",
+                    markingScheme = "1 Mark for definition / correct option; remaining marks for reasoning and steps."
+                )
+            }
+            PaperSection(
+                name = p.name,
+                title = p.title,
+                instructions = "Answer all questions in this section.",
+                totalMarks = p.totalMarks,
+                questions = questions
+            )
+        }
+    }
+
+    fun getSubjectsForBoard(board: EducationBoard, classLevel: String): List<String> = getAvailableSubjects(board, classLevel)
+
     fun getAvailableSubjects(board: EducationBoard, classLevel: String): List<String> {
         val numericClass = classLevel.filter { it.isDigit() }.toIntOrNull() ?: 10
 
@@ -177,6 +230,8 @@ object MarksDistribution {
             )
         }
     }
+
+    fun formatAsPlainText(paper: GeneratedPaper): String = formatPaperAsText(paper, true)
 
     fun formatPaperAsText(paper: GeneratedPaper, includeAnswers: Boolean): String {
         val sb = StringBuilder()

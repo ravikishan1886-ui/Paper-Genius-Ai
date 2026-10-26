@@ -1,7 +1,5 @@
 package com.papergenius.ai.model
 
-import com.google.gson.annotations.SerializedName
-
 enum class EducationBoard(val displayName: String) {
     CBSE("CBSE"),
     PSEB("PSEB"),
@@ -34,39 +32,107 @@ enum class QuestionType(val displayName: String, val defaultMarks: Int) {
     CASE_BASED("Case-Based / Competency", 4),
     ASSERTION_REASON("Assertion & Reasoning", 1),
     NUMERICAL("Numerical Problem", 3),
-    DIAGRAM_BASED("Diagram-Based Question", 4)
+    DIAGRAM_BASED("Diagram-Based Question", 4);
+
+    companion object {
+        val VSA: QuestionType get() = VERY_SHORT
+        val SHORT: QuestionType get() = SHORT_ANSWER
+        val LONG: QuestionType get() = LONG_ANSWER
+        val DIAGRAM: QuestionType get() = DIAGRAM_BASED
+    }
 }
 
 data class QuestionInternalChoice(
-    val questionText: String,
+    val questionText: String = "",
     val options: List<String>? = null,
     val answerKey: String = "",
     val solution: String? = null
 )
 
 data class QuestionItem(
-    val id: String,
-    var questionNumber: Int,
-    val type: QuestionType,
-    val sectionName: String,
-    var questionText: String,
-    var marks: Int,
+    val id: String = java.util.UUID.randomUUID().toString(),
+    var questionNumber: Int = 1,
+    val type: QuestionType = QuestionType.MCQ,
+    val sectionName: String = "Section A",
+    var questionText: String = "",
+    var marks: Int = 1,
     var options: List<String>? = null,
     val internalChoice: QuestionInternalChoice? = null,
     var answerKey: String = "",
     var solutionSteps: List<String>? = null,
     val markingScheme: String? = null,
     val chapterOrTopic: String? = null,
-    val diagramNote: String? = null
-)
+    val diagramNote: String? = null,
+    val number: Int = questionNumber,
+    val text: String = questionText,
+    val correctAnswer: String = answerKey,
+    val explanation: String? = markingScheme,
+    val chapter: String? = chapterOrTopic,
+    val hasInternalChoice: Boolean = internalChoice != null,
+    val orQuestion: String? = internalChoice?.questionText
+) {
+    constructor(
+        id: String = java.util.UUID.randomUUID().toString(),
+        number: Int,
+        type: QuestionType,
+        text: String,
+        marks: Int,
+        options: List<String>? = null,
+        correctAnswer: String = "",
+        explanation: String? = null,
+        chapter: String? = null,
+        hasInternalChoice: Boolean = false,
+        orQuestion: String? = null
+    ) : this(
+        id = id,
+        questionNumber = number,
+        type = type,
+        sectionName = "",
+        questionText = text,
+        marks = marks,
+        options = options,
+        internalChoice = if (hasInternalChoice && orQuestion != null) QuestionInternalChoice(orQuestion) else null,
+        answerKey = correctAnswer,
+        solutionSteps = null,
+        markingScheme = explanation,
+        chapterOrTopic = chapter,
+        diagramNote = null,
+        number = number,
+        text = text,
+        correctAnswer = correctAnswer,
+        explanation = explanation,
+        chapter = chapter,
+        hasInternalChoice = hasInternalChoice,
+        orQuestion = orQuestion
+    )
+}
 
 data class PaperSection(
     val name: String,
-    val title: String,
+    val title: String = name,
     val instructions: String? = null,
-    var totalMarks: Int,
-    val questions: MutableList<QuestionItem>
-)
+    var totalMarks: Int = 0,
+    val questions: List<QuestionItem> = emptyList(),
+    val id: String = name,
+    val marksPerQuestion: Int = 1
+) {
+    constructor(
+        id: String,
+        name: String,
+        instructions: String? = null,
+        marksPerQuestion: Int,
+        totalMarks: Int,
+        questions: List<QuestionItem>
+    ) : this(
+        name = name,
+        title = name,
+        instructions = instructions,
+        totalMarks = totalMarks,
+        questions = questions,
+        id = id,
+        marksPerQuestion = marksPerQuestion
+    )
+}
 
 data class AnalysisReport(
     val pagesAnalyzed: Int = 1,
@@ -77,30 +143,58 @@ data class AnalysisReport(
 )
 
 data class GeneratedPaper(
-    val id: String,
-    val title: String,
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val title: String = "Examination Paper",
     val schoolName: String? = null,
     val examinationHeading: String = "Examination 2026-27",
-    val board: EducationBoard,
-    val classLevel: String,
-    val subject: String,
-    val examType: ExamType,
-    val totalMarks: Int,
-    val durationMinutes: Int,
+    val board: EducationBoard = EducationBoard.CBSE,
+    val classLevel: String = "Class 10",
+    val subject: String = "Science",
+    val examType: ExamType = ExamType.ANNUAL,
+    val totalMarks: Int = 80,
+    val durationMinutes: Int = 180,
     val generalInstructions: List<String> = emptyList(),
-    val sections: List<PaperSection>,
+    val sections: List<PaperSection> = emptyList(),
     val topicsCovered: List<String> = emptyList(),
     val analysisReport: AnalysisReport? = null,
-    val createdAt: String = "",
-    val updatedAt: String = ""
-)
+    val createdAt: Any = "",
+    val updatedAt: Any = "",
+    val className: String = classLevel,
+    val duration: String = "$durationMinutes mins",
+    val uploadedPagesCount: Int = 0,
+    val analyzedTopics: List<String> = topicsCovered
+) {
+    val totalQuestionsCount: Int
+        get() = sections.sumOf { it.questions.size }
+}
 
 data class UploadedPagePhoto(
-    val id: String,
+    val id: String = java.util.UUID.randomUUID().toString(),
     val fileName: String,
     val localUriString: String? = null,
     val base64Data: String? = null,
-    val sizeBytes: Long = 0
+    val sizeBytes: Long = 0,
+    val analysisSummary: String? = null,
+    val detectedKeywords: List<String> = emptyList(),
+    val uriString: String? = localUriString,
+    val fileSizeBytes: Long = sizeBytes
+)
+
+data class GeneratePaperParams(
+    val board: EducationBoard,
+    val className: String,
+    val subject: String,
+    val examType: ExamType,
+    val totalMarks: Int,
+    val difficulty: DifficultyLevel,
+    val questionTypes: List<QuestionType>,
+    val schoolName: String = "",
+    val customDuration: String = "",
+    val includeInternalChoice: Boolean = true,
+    val includeCompetencyBased: Boolean = true,
+    val includeAnswerKey: Boolean = true,
+    val includeDetailedSolutions: Boolean = true,
+    val includeMarkingScheme: Boolean = true
 )
 
 data class SectionPlan(
@@ -125,3 +219,7 @@ data class SectionMarksBreakdown(
     val marks: Int,
     val count: Int
 )
+
+fun GeneratedPaper.formatAsPlainText(): String {
+    return com.papergenius.ai.logic.MarksDistribution.formatPaperAsText(this, true)
+}

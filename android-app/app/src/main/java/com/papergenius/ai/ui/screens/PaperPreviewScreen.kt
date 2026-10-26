@@ -199,7 +199,7 @@ fun PaperPreviewScreen(
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                        text = currentPaper.schoolName.uppercase(),
+                        text = (currentPaper.schoolName ?: "EXAMINATION QUESTION PAPER").uppercase(),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = NavyDark,
@@ -315,9 +315,9 @@ fun PaperPreviewScreen(
                             }
                         }
 
-                        if (section.instructions.isNotBlank()) {
+                        if (!section.instructions.isNullOrBlank()) {
                             Text(
-                                text = section.instructions,
+                                text = section.instructions!!,
                                 fontSize = 11.sp,
                                 color = TextMuted,
                                 modifier = Modifier.padding(horizontal = 4.dp)
@@ -478,16 +478,16 @@ fun PaperPreviewScreen(
     // Edit Question Modal Dialog
     if (editingQuestionInfo != null) {
         val (sectionId, originalQuestion) = editingQuestionInfo!!
-        var editedText by remember { mutableStateOf(originalQuestion.text) }
+        var editedText by remember { mutableStateOf(originalQuestion.questionText) }
         var editedMarks by remember { mutableStateOf(originalQuestion.marks.toString()) }
-        var editedAnswer by remember { mutableStateOf(originalQuestion.correctAnswer ?: "") }
-        var editedExplanation by remember { mutableStateOf(originalQuestion.explanation ?: "") }
+        var editedAnswer by remember { mutableStateOf(originalQuestion.answerKey) }
+        var editedExplanation by remember { mutableStateOf(originalQuestion.markingScheme ?: "") }
 
         AlertDialog(
             onDismissRequest = { editingQuestionInfo = null },
             title = {
                 Text(
-                    text = "Edit Question ${originalQuestion.number}",
+                    text = "Edit Question ${originalQuestion.questionNumber}",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -532,10 +532,10 @@ fun PaperPreviewScreen(
                     onClick = {
                         val parsedMarks = editedMarks.toIntOrNull() ?: originalQuestion.marks
                         val updated = originalQuestion.copy(
-                            text = editedText,
+                            questionText = editedText,
                             marks = parsedMarks,
-                            correctAnswer = editedAnswer,
-                            explanation = editedExplanation
+                            answerKey = editedAnswer,
+                            markingScheme = editedExplanation
                         )
                         viewModel.updateQuestion(sectionId, updated)
                         editingQuestionInfo = null
@@ -631,13 +631,14 @@ fun QuestionDisplayCard(
             )
 
             // Multiple choice options if present
-            if (question.type == QuestionType.MCQ && !question.options.isNullOrEmpty()) {
+            val questionOpts = question.options
+            if (question.type == QuestionType.MCQ && !questionOpts.isNullOrEmpty()) {
                 val letters = listOf("A", "B", "C", "D")
                 Column(
                     modifier = Modifier.padding(start = 4.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    question.options.forEachIndexed { idx, opt ->
+                    questionOpts.forEachIndexed { idx, opt ->
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                             verticalAlignment = Alignment.Top
@@ -660,7 +661,8 @@ fun QuestionDisplayCard(
             }
 
             // Internal Choice (OR Question)
-            if (question.hasInternalChoice && !question.orQuestion.isNullOrBlank()) {
+            val internalOr = question.internalChoice
+            if (internalOr != null) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     color = Slate50,
@@ -679,7 +681,7 @@ fun QuestionDisplayCard(
                             modifier = Modifier.fillMaxWidth()
                         )
                         Text(
-                            text = question.orQuestion,
+                            text = internalOr.questionText,
                             fontSize = 12.sp,
                             color = NavyDark
                         )

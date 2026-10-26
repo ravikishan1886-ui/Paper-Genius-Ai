@@ -306,15 +306,16 @@ fun GeneratorScreen(
                         .horizontalScroll(subjectScrollState),
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
+                    val chipColors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = PurpleAccent,
+                        selectedLabelColor = Color.White
+                    )
                     offeredSubjects.forEach { sub ->
                         FilterChip(
                             selected = formState.subject == sub,
                             onClick = { viewModel.setSubject(sub) },
                             label = { Text(sub, fontSize = 12.sp) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = PurpleAccent,
-                                selectedLabelColor = Color.White
-                            )
+                            colors = chipColors
                         )
                     }
                 }
