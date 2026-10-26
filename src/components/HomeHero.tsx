@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Award,
   Zap,
+  Smartphone,
 } from 'lucide-react';
 
 interface HomeHeroProps {
@@ -96,6 +97,52 @@ export const HomeHero: React.FC<HomeHeroProps> = ({
             <div className="flex items-center justify-center gap-1.5">
               <Download className="w-4 h-4 text-purple-600" />
               <span>Printable A4 PDF & Word Export</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Android App APK Download Banner */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-indigo-500/20 relative overflow-hidden">
+          <div className="absolute -right-10 -bottom-10 w-60 h-60 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
+            <div className="flex items-start gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0 text-emerald-400 shadow-inner">
+                <Smartphone className="w-7 h-7" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                    Download Native Android APK
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Android 15 Compatible
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-500/20 text-indigo-200 border border-indigo-400/30">
+                    15.29 MB
+                  </span>
+                </div>
+                <p className="text-sm text-slate-300 max-w-xl">
+                  Install PaperGenius AI directly on your Lava Android 15 phone or any Android device (SDK 24+). Full Jetpack Compose & Material 3 native experience.
+                </p>
+                <div className="pt-2 text-xs text-slate-400 flex items-center gap-4 flex-wrap">
+                  <span>✓ Built with Gradle & AndroidX</span>
+                  <span>✓ Package: <code className="text-emerald-300 font-mono">com.papergenius.ai</code></span>
+                  <span>✓ Fast Offline & Camera Access</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
+              <a
+                href="/api/download-apk"
+                download="PaperGenius-AI.apk"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold text-slate-900 bg-emerald-400 hover:bg-emerald-300 active:bg-emerald-500 shadow-lg shadow-emerald-500/20 transition-all text-center"
+              >
+                <Download className="w-4 h-4" />
+                <span>Download APK (15.3 MB)</span>
+              </a>
             </div>
           </div>
         </div>

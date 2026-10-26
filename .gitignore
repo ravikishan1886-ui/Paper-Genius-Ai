@@ -7,6 +7,12 @@ coverage/
 .env*
 !.env.example
 *.properties
+!gradle.properties
+!gradle-wrapper.properties
+!*/gradle.properties
+!*/gradle/wrapper/gradle-wrapper.properties
 local.properties
 .gradle/
+*.apk
+*.aab
 

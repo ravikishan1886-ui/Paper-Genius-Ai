@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI, Type } from '@google/genai';
 import { generateSectionPlan } from './src/utils/marksDistribution.js';
@@ -435,6 +436,53 @@ Respond strictly in JSON:
     console.error('Error regenerating question:', err);
     return res.status(500).json({ error: err.message || 'Failed to regenerate question.' });
   }
+});
+
+// Download Android APK endpoint
+app.get(['/api/download-apk', '/download/PaperGenius-AI.apk', '/PaperGenius-AI.apk', '/app-debug.apk'], (req, res) => {
+  const candidatePaths = [
+    path.resolve(__dirname, 'android-app/app/build/outputs/apk/debug/app-debug.apk'),
+    path.resolve(__dirname, 'app/build/outputs/apk/debug/app-debug.apk'),
+    path.resolve(__dirname, 'android-app/app/build/outputs/apk/release/app-release.apk'),
+  ];
+
+  for (const apkPath of candidatePaths) {
+    if (fs.existsSync(apkPath)) {
+      const stats = fs.statSync(apkPath);
+      res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+      res.setHeader('Content-Disposition', 'attachment; filename="PaperGenius-AI.apk"');
+      res.setHeader('Content-Length', stats.size);
+      const stream = fs.createReadStream(apkPath);
+      return stream.pipe(res);
+    }
+  }
+
+  return res.status(404).json({
+    error: 'APK not found. Please trigger build first.',
+  });
+});
+
+// APK status endpoint
+app.get('/api/apk-status', (req, res) => {
+  const candidatePaths = [
+    path.resolve(__dirname, 'android-app/app/build/outputs/apk/debug/app-debug.apk'),
+    path.resolve(__dirname, 'app/build/outputs/apk/debug/app-debug.apk'),
+  ];
+
+  for (const apkPath of candidatePaths) {
+    if (fs.existsSync(apkPath)) {
+      const stats = fs.statSync(apkPath);
+      return res.json({
+        exists: true,
+        sizeBytes: stats.size,
+        sizeMb: (stats.size / (1024 * 1024)).toFixed(2),
+        fileName: 'PaperGenius-AI.apk',
+        downloadUrl: '/api/download-apk',
+      });
+    }
+  }
+
+  return res.json({ exists: false });
 });
 
 // Mount Vite middleware in dev mode, or serve static dist in prod
