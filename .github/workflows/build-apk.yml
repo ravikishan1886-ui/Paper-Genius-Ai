@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build Debug APK
@@ -27,12 +30,24 @@ jobs:
           java -version
           echo "JAVA_HOME=$JAVA_HOME"
 
+      - name: Configure Android SDK environment
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          # Remove any invalid local.properties
+          rm -f local.properties android-app/local.properties
+          
+          # Create valid local.properties with runner's SDK location
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          if [ -d "android-app" ]; then
+            echo "sdk.dir=$ANDROID_HOME" > android-app/local.properties
+          fi
+
       - name: Create temporary debug keystore
         run: |
           mkdir -p ~/.android
-          if [ ! -f "./debug.keystore" ]; then
+          if [ ! -f "~/.android/debug.keystore" ]; then
             keytool -genkey -v \
-              -keystore ./debug.keystore \
+              -keystore ~/.android/debug.keystore \
               -storepass android \
               -alias androiddebugkey \
               -keypass android \
@@ -41,38 +56,39 @@ jobs:
               -validity 10000 \
               -dname "CN=Android Debug,O=Android,C=US"
           fi
-          cp ./debug.keystore ~/.android/debug.keystore
+          
+          cp ~/.android/debug.keystore ./debug.keystore
           if [ -d "android-app" ]; then
-            cp ./debug.keystore android-app/debug.keystore
+            cp ~/.android/debug.keystore android-app/debug.keystore
           fi
           echo "Debug keystore configured successfully."
 
-      - name: Make Gradle wrapper executable
+      - name: Build Debug APK
         run: |
           chmod +x ./gradlew 2>/dev/null || true
           chmod +x android-app/gradlew 2>/dev/null || true
-
-      - name: Build debug APK with Gradle
-        run: |
-          if [ -f "./gradlew" ]; then
-            ./gradlew :app:assembleDebug --stacktrace --no-daemon
-          elif [ -f "android-app/gradlew" ]; then
+          
+          if [ -d "android-app" ] && [ -f "android-app/gradlew" ]; then
+            echo "Building inside android-app directory..."
             cd android-app
             ./gradlew :app:assembleDebug --stacktrace --no-daemon
             cd ..
+          elif [ -f "./gradlew" ]; then
+            echo "Building at root directory..."
+            ./gradlew :app:assembleDebug --stacktrace --no-daemon
           fi
 
       - name: Verify and place APK
         run: |
           mkdir -p app/build/outputs/apk/debug
-          APK_PATH=$(find . -name "*.apk" | grep -i "debug" | head -n 1)
-          if [ -n "$APK_PATH" ] && [ -f "$APK_PATH" ]; then
-            echo "Found APK at: $APK_PATH"
-            cp "$APK_PATH" app/build/outputs/apk/debug/app-debug.apk
+          APK_FILE=$(find . -name "*.apk" 2>/dev/null | grep -i "debug" | head -n 1)
+          if [ -n "$APK_FILE" ] && [ -f "$APK_FILE" ]; then
+            echo "Discovered APK at: $APK_FILE"
+            cp "$APK_FILE" app/build/outputs/apk/debug/app-debug.apk
             ls -lh app/build/outputs/apk/debug/app-debug.apk
           else
-            echo "Error: Debug APK was not generated."
-            find . -name "*.apk" || true
+            echo "ERROR: Debug APK file was not produced."
+            find . -name "*.apk" 2>/dev/null || true
             exit 1
           fi
 
