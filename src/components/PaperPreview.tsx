@@ -225,17 +225,17 @@ export const PaperPreview: React.FC<PaperPreviewProps> = ({
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="max-w-5xl mx-auto px-2.5 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6">
       {/* Top Controls Bar (Hidden during Print) */}
-      <div className="no-print bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+      <div className="no-print bg-white rounded-2xl border border-slate-200 p-3 sm:p-5 shadow-xs space-y-3 sm:space-y-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div className="flex items-center justify-between sm:justify-start gap-2">
             <button
               onClick={onBackToGenerator}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Generator</span>
+              <span>Back</span>
             </button>
 
             <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">
@@ -243,23 +243,23 @@ export const PaperPreview: React.FC<PaperPreviewProps> = ({
             </span>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2">
+          {/* Quick Actions (Edit, Copy, Print, Save) */}
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-1.5 sm:gap-2">
             <button
               onClick={() => setIsEditMode(!isEditMode)}
-              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-colors ${
+              className={`inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold border transition-colors ${
                 isEditMode
                   ? 'bg-amber-500 text-white border-amber-500'
                   : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
               }`}
             >
               <Edit3 className="w-3.5 h-3.5" />
-              <span>{isEditMode ? 'Done Editing' : 'Edit Paper'}</span>
+              <span>{isEditMode ? 'Done' : 'Edit Paper'}</span>
             </button>
 
             <button
               onClick={handleCopyText}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border border-slate-300 text-slate-700 hover:bg-slate-50 bg-white transition-colors"
+              className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold border border-slate-300 text-slate-700 hover:bg-slate-50 bg-white transition-colors"
             >
               <Copy className="w-3.5 h-3.5 text-slate-500" />
               <span>{copiedToast ? 'Copied!' : 'Copy Text'}</span>
@@ -267,7 +267,7 @@ export const PaperPreview: React.FC<PaperPreviewProps> = ({
 
             <button
               onClick={handleBrowserPrint}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border border-slate-300 text-slate-700 hover:bg-slate-50 bg-white transition-colors"
+              className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold border border-slate-300 text-slate-700 hover:bg-slate-50 bg-white transition-colors"
             >
               <Printer className="w-3.5 h-3.5 text-slate-500" />
               <span>Print A4</span>
@@ -275,73 +275,77 @@ export const PaperPreview: React.FC<PaperPreviewProps> = ({
 
             <button
               onClick={handleSaveToMyPapers}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs transition-colors"
+              className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs transition-colors"
             >
               <Save className="w-3.5 h-3.5" />
-              <span>{savedToast ? 'Saved in My Papers!' : 'Save Paper'}</span>
+              <span>{savedToast ? 'Saved!' : 'Save Paper'}</span>
+            </button>
+          </div>
+
+          {/* Direct Vector PDF Export Buttons */}
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-1.5 w-full lg:w-auto">
+            <button
+              onClick={() => exportPaperToPdf(paper, 'question_paper')}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-extrabold text-white bg-blue-700 hover:bg-blue-800 shadow-xs transition-colors"
+              title="Download Question Paper PDF without answers"
+            >
+              <Download className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">Question Paper PDF</span>
+              <span className="sm:hidden">Paper PDF</span>
             </button>
 
-            {/* Direct Vector PDF Export Buttons */}
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => exportPaperToPdf(paper, 'question_paper')}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold text-white bg-blue-700 hover:bg-blue-800 shadow-xs transition-colors"
-                title="Download Question Paper PDF without answers"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Question Paper PDF</span>
-              </button>
-
-              <button
-                onClick={() => exportPaperToPdf(paper, 'answer_key')}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold text-white bg-purple-700 hover:bg-purple-800 shadow-xs transition-colors"
-                title="Download Teacher Answer Key PDF with marking scheme"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Answer Key PDF</span>
-              </button>
-            </div>
+            <button
+              onClick={() => exportPaperToPdf(paper, 'answer_key')}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-extrabold text-white bg-purple-700 hover:bg-purple-800 shadow-xs transition-colors"
+              title="Download Teacher Answer Key PDF with marking scheme"
+            >
+              <Download className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">Answer Key PDF</span>
+              <span className="sm:hidden">Answers PDF</span>
+            </button>
           </div>
         </div>
 
         {/* View Mode Switcher & Marks Audit */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs">
-          {/* Document Switcher */}
-          <div className="inline-flex rounded-xl p-1 bg-slate-100 border border-slate-200">
+          {/* Document Switcher - 50%/50% width on mobile */}
+          <div className="grid grid-cols-2 w-full sm:w-auto p-1 bg-slate-100 rounded-xl border border-slate-200">
             <button
               onClick={() => setActiveTab('student')}
-              className={`px-4 py-1.5 rounded-lg font-bold transition-all ${
+              className={`py-1.5 px-2 sm:px-4 rounded-lg font-bold text-center transition-all ${
                 activeTab === 'student'
                   ? 'bg-white text-blue-700 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              📄 Student Question Paper
+              <span className="hidden sm:inline">📄 Student Question Paper</span>
+              <span className="sm:hidden">📄 Questions</span>
             </button>
             <button
               onClick={() => setActiveTab('teacher')}
-              className={`px-4 py-1.5 rounded-lg font-bold transition-all ${
+              className={`py-1.5 px-2 sm:px-4 rounded-lg font-bold text-center transition-all ${
                 activeTab === 'teacher'
                   ? 'bg-white text-purple-700 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              🔑 Teacher Answer Key & Solutions
+              <span className="hidden sm:inline">🔑 Teacher Answer Key</span>
+              <span className="sm:hidden">🔑 Answers</span>
             </button>
           </div>
 
           {/* Marks Validation Live Status */}
-          <div className="flex items-center gap-2">
-            <span className="text-slate-500 font-medium">Marks Status:</span>
+          <div className="flex items-center justify-center sm:justify-end gap-1.5 text-center">
+            <span className="text-slate-500 font-medium hidden sm:inline">Marks Status:</span>
             {marksValidation.valid ? (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                Balanced: {currentTotal} / {paper.totalMarks} Marks (100% Match)
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                Balanced: {currentTotal} / {paper.totalMarks} Marks
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold">
-                <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
-                Current: {currentTotal} / {paper.totalMarks} Marks (Difference: {marksValidation.difference}M)
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold text-xs">
+                <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                {currentTotal} / {paper.totalMarks} Marks (Diff: {marksValidation.difference}M)
               </span>
             )}
           </div>
@@ -349,20 +353,55 @@ export const PaperPreview: React.FC<PaperPreviewProps> = ({
       </div>
 
       {/* Main Examination Sheet Preview (Rendered as physical paper) */}
-      <div className="print-page bg-white rounded-2xl border border-slate-200/90 shadow-lg p-6 sm:p-12 space-y-6 text-slate-900 font-serif">
+      <div className="print-page relative bg-white rounded-2xl border border-slate-200/90 shadow-lg p-3.5 sm:p-8 lg:p-12 space-y-5 sm:space-y-6 text-slate-900 font-serif overflow-hidden">
+        {/* Subtle Diagonal Watermark Overlay across the Question Paper */}
+        <div
+          aria-hidden="true"
+          className="watermark-overlay pointer-events-none select-none absolute inset-0 flex flex-col justify-around items-center overflow-hidden z-0 opacity-10 print:opacity-20"
+        >
+          <div className="text-slate-900 font-black tracking-widest text-2xl sm:text-4xl lg:text-6xl -rotate-25 uppercase transform whitespace-nowrap">
+            Made by Ravi Kishan
+          </div>
+          <div className="text-slate-900 font-black tracking-widest text-2xl sm:text-4xl lg:text-6xl -rotate-25 uppercase transform whitespace-nowrap">
+            Made by Ravi Kishan
+          </div>
+          <div className="text-slate-900 font-black tracking-widest text-2xl sm:text-4xl lg:text-6xl -rotate-25 uppercase transform whitespace-nowrap">
+            Made by Ravi Kishan
+          </div>
+        </div>
+
         {/* Paper Header / Title Block */}
-        <div className="text-center space-y-1 pb-4 border-b-2 border-slate-900">
+        <div className="text-center space-y-1 pb-4 border-b-2 border-slate-900 relative z-10">
+          {/* Official Exam Board Logo & Watermark Tag */}
+          <div className="flex items-center justify-center gap-2.5 pb-2">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden shadow-sm border border-slate-200 bg-indigo-950 shrink-0">
+              <img
+                src="/assets/aistudio/Screenshot_20261026-183944_2_d8c50829.jpg"
+                alt="Exam Board Logo"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="text-left">
+              <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full">
+                Verified Examination Paper
+              </span>
+              <div className="text-[10px] sm:text-[11px] font-sans text-slate-600 font-bold">
+                Watermark: Made by Ravi Kishan
+              </div>
+            </div>
+          </div>
+
           {paper.schoolName ? (
-            <h1 className="text-xl sm:text-2xl font-black tracking-wide text-slate-950 uppercase font-sans">
+            <h1 className="text-lg sm:text-2xl font-black tracking-wide text-slate-950 uppercase font-sans">
               {paper.schoolName}
             </h1>
           ) : (
-            <h1 className="text-xl sm:text-2xl font-black tracking-wide text-slate-950 uppercase font-sans">
+            <h1 className="text-lg sm:text-2xl font-black tracking-wide text-slate-950 uppercase font-sans">
               EXAMINATION BOARD ASSESSMENT
             </h1>
           )}
 
-          <h2 className="text-base sm:text-lg font-bold text-indigo-900 tracking-tight uppercase font-sans">
+          <h2 className="text-sm sm:text-lg font-bold text-indigo-900 tracking-tight uppercase font-sans">
             {paper.examinationHeading || `${paper.examType} 2026-27`}
           </h2>
 
@@ -372,7 +411,7 @@ export const PaperPreview: React.FC<PaperPreviewProps> = ({
             </div>
           )}
 
-          <div className="pt-2 flex flex-wrap items-center justify-between text-xs sm:text-sm font-sans font-bold text-slate-800 px-2">
+          <div className="pt-2 grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-between text-xs sm:text-sm font-sans font-bold text-slate-800 px-1 sm:px-2 gap-2 text-left">
             <div>
               Board: <span className="font-semibold text-slate-700">{paper.board}</span> | {paper.classLevel}
             </div>
@@ -380,17 +419,17 @@ export const PaperPreview: React.FC<PaperPreviewProps> = ({
               Subject: <span className="font-semibold text-slate-700">{paper.subject}</span>
             </div>
             <div>
-              Time Allowed: <span className="font-semibold text-slate-700">{Math.floor(paper.durationMinutes / 60)}h {paper.durationMinutes % 60}m</span>
+              Time: <span className="font-semibold text-slate-700">{Math.floor(paper.durationMinutes / 60)}h {paper.durationMinutes % 60}m</span>
             </div>
             <div>
-              Maximum Marks: <span className="font-semibold text-slate-700">{paper.totalMarks}</span>
+              Max Marks: <span className="font-semibold text-slate-700">{paper.totalMarks}</span>
             </div>
           </div>
         </div>
 
         {/* General Instructions Block (Student View) */}
         {activeTab === 'student' && paper.generalInstructions && paper.generalInstructions.length > 0 && (
-          <div className="text-xs sm:text-sm font-sans bg-slate-50/60 p-4 rounded-xl border border-slate-200 space-y-1.5">
+          <div className="relative z-10 text-xs sm:text-sm font-sans bg-slate-50/60 p-4 rounded-xl border border-slate-200 space-y-1.5">
             <h3 className="font-bold text-slate-900 uppercase tracking-wide">
               General Instructions:
             </h3>
@@ -405,7 +444,7 @@ export const PaperPreview: React.FC<PaperPreviewProps> = ({
         )}
 
         {/* Sections */}
-        <div className="space-y-8">
+        <div className="space-y-8 relative z-10">
           {paper.sections.map((section, sIdx) => (
             <div key={section.name} className="space-y-4">
               {/* Section Header Bar */}
@@ -619,7 +658,7 @@ export const PaperPreview: React.FC<PaperPreviewProps> = ({
                           type="button"
                           onClick={() => handleRegenerateQuestion(q)}
                           disabled={regeneratingQuestionId === q.id}
-                          className="no-print opacity-0 group-hover:opacity-100 focus:opacity-100 inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 rounded-sm border border-indigo-200 transition-all mt-1"
+                          className="no-print opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-md border border-indigo-200 transition-all mt-1"
                           title="Generate a fresh alternative question using AI"
                         >
                           <RefreshCw
@@ -637,8 +676,13 @@ export const PaperPreview: React.FC<PaperPreviewProps> = ({
         </div>
 
         {/* Paper Footer */}
-        <div className="pt-6 border-t-2 border-slate-900 text-center font-sans text-xs text-slate-500 font-bold tracking-widest uppercase">
-          *** END OF {activeTab === 'teacher' ? 'OFFICIAL ANSWER KEY & SOLUTIONS' : 'QUESTION PAPER'} ***
+        <div className="pt-6 border-t-2 border-slate-900 text-center font-sans space-y-1 relative z-10">
+          <div className="text-xs text-slate-700 font-bold tracking-widest uppercase">
+            *** END OF {activeTab === 'teacher' ? 'OFFICIAL ANSWER KEY & SOLUTIONS' : 'QUESTION PAPER'} ***
+          </div>
+          <div className="text-[11px] text-slate-500 font-semibold tracking-wider uppercase">
+            Document Watermark: Made by Ravi Kishan • PaperGenius AI
+          </div>
         </div>
       </div>
     </div>

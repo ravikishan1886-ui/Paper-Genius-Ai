@@ -248,15 +248,41 @@ export function exportPaperToPdf(paper: GeneratedPaper, mode: 'question_paper' |
   doc.setTextColor(148, 163, 184);
   doc.text('*** END OF QUESTION PAPER ***', pageWidth / 2, cursorY, { align: 'center' });
 
-  // Add footer to all pages
+  // Add watermark and footer to all pages
   const totalPages = (doc.internal as any).getNumberOfPages ? (doc.internal as any).getNumberOfPages() : 1;
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
+
+    // Diagonal Watermark: Made by Ravi Kishan
+    doc.saveGraphicsState();
+    doc.setTextColor(230, 233, 242); // very soft subtle watermark
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(36);
+    try {
+      (doc as any).text('Made by Ravi Kishan', pageWidth / 2, pageHeight / 2, {
+        align: 'center',
+        angle: 40,
+      });
+      (doc as any).text('Made by Ravi Kishan', pageWidth / 2, pageHeight / 3, {
+        align: 'center',
+        angle: 40,
+      });
+      (doc as any).text('Made by Ravi Kishan', pageWidth / 2, (pageHeight * 2) / 3, {
+        align: 'center',
+        angle: 40,
+      });
+    } catch {
+      // Fallback if angle option unsupported
+      doc.text('--- Made by Ravi Kishan ---', pageWidth / 2, pageHeight / 2, { align: 'center' });
+    }
+    doc.restoreGraphicsState();
+
+    // Footer
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(148, 163, 184);
     doc.text(
-      `PaperGenius AI  |  ${paper.subject} (${paper.board} ${paper.classLevel})  |  Page ${i} of ${totalPages}`,
+      `PaperGenius AI  |  Watermark: Made by Ravi Kishan  |  ${paper.subject} (${paper.board} ${paper.classLevel})  |  Page ${i} of ${totalPages}`,
       pageWidth / 2,
       pageHeight - 8,
       { align: 'center' }

@@ -3,20 +3,24 @@ import { Sparkles, ShieldCheck, HeartHandshake, BookOpen, CheckCircle2 } from 'l
 
 export const AboutView: React.FC = () => {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+    <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-12 space-y-6 sm:space-y-10">
       <div className="text-center space-y-3">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-700 to-indigo-600 text-white flex items-center justify-center mx-auto shadow-md">
-          <Sparkles className="w-7 h-7 text-amber-300" />
+        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden shadow-lg border-2 border-indigo-200 mx-auto bg-indigo-950">
+          <img
+            src="/assets/aistudio/Screenshot_20261026-183944_2_d8c50829.jpg"
+            alt="PaperGenius Logo"
+            className="w-full h-full object-cover"
+          />
         </div>
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
           About PaperGenius AI
         </h1>
-        <p className="text-sm font-bold text-indigo-700 uppercase tracking-widest">
+        <p className="text-xs sm:text-sm font-bold text-indigo-700 uppercase tracking-widest">
           Turn Textbook Pages into Exam-Ready Question Papers
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-xs space-y-6 text-slate-700 leading-relaxed text-sm">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-4 sm:space-y-6 text-slate-700 leading-relaxed text-xs sm:text-sm">
         <h2 className="text-xl font-bold text-slate-900">
           Our Educational Mission
         </h2>

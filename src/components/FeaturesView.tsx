@@ -18,15 +18,15 @@ interface FeaturesViewProps {
 
 export const FeaturesView: React.FC<FeaturesViewProps> = ({ onStartGenerator }) => {
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
-      <div className="text-center space-y-3">
-        <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-200">
+    <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 sm:space-y-12">
+      <div className="text-center space-y-2 sm:space-y-3">
+        <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
           Core Capabilities
         </span>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
           How PaperGenius AI Works
         </h1>
-        <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto">
+        <p className="text-xs sm:text-base text-slate-600 max-w-2xl mx-auto">
           Combining vision-capable Gemini AI with a strict marks-balancing allocation engine to generate reliable Indian school question papers.
         </p>
       </div>
@@ -126,9 +126,9 @@ export const FeaturesView: React.FC<FeaturesViewProps> = ({ onStartGenerator }) 
       <div className="text-center pt-4">
         <button
           onClick={onStartGenerator}
-          className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-blue-700 to-indigo-600 hover:from-blue-800 hover:to-indigo-700 shadow-lg shadow-indigo-600/25 transition-all"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-blue-700 to-indigo-600 hover:from-blue-800 hover:to-indigo-700 shadow-lg shadow-indigo-600/25 transition-all"
         >
-          <Sparkles className="w-4 h-4 text-amber-300" />
+          <Sparkles className="w-4 h-4 text-amber-300 shrink-0" />
           <span>Launch Generator Now</span>
         </button>
       </div>

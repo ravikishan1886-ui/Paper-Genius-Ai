@@ -101,8 +101,12 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-6 border-b border-slate-100">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white font-bold shadow-xs">
-                <Sparkles className="w-4 h-4 text-amber-300" />
+              <div className="w-8 h-8 rounded-lg overflow-hidden border border-slate-200 bg-indigo-950 shrink-0">
+                <img
+                  src="/assets/aistudio/Screenshot_20261026-183944_2_d8c50829.jpg"
+                  alt="PaperGenius Logo"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div>
                 <span className="font-extrabold text-slate-900 text-sm">
@@ -114,7 +118,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-6 font-semibold">
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 font-semibold">
               <button
                 onClick={() => handleNavigate('home')}
                 className="hover:text-indigo-600 transition-colors"
@@ -148,12 +152,12 @@ export default function App() {
             </div>
           </div>
 
-          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-400">
+          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-400 text-center sm:text-left">
             <p>
-              © {new Date().getFullYear()} PaperGenius AI. Designed for CBSE, PSEB, and ICSE schools & educators.
+              © {new Date().getFullYear()} PaperGenius AI • Made by Ravi Kishan.
             </p>
-            <p className="flex items-center gap-1">
-              Crafted with intelligent vision OCR & marks allocation engine.
+            <p className="flex items-center justify-center gap-1 text-[11px]">
+              Designed for CBSE, PSEB, and ICSE schools & educators.
             </p>
           </div>
         </div>

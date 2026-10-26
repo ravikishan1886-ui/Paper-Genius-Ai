@@ -53,94 +53,93 @@ export const HomeHero: React.FC<HomeHeroProps> = ({
           </p>
 
           {/* CTA Buttons */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+          <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
             <button
               onClick={onStartGenerator}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl text-base font-bold text-white bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 hover:from-blue-800 hover:to-purple-700 shadow-lg shadow-indigo-600/25 hover:shadow-indigo-600/35 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl text-sm sm:text-base font-bold text-white bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 hover:from-blue-800 hover:to-purple-700 shadow-lg shadow-indigo-600/25 hover:shadow-indigo-600/35 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
             >
-              <Sparkles className="w-5 h-5 text-amber-300" />
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
               <span>Generate Question Paper</span>
-              <ArrowRight className="w-4 h-4 ml-0.5" />
+              <ArrowRight className="w-4 h-4 ml-0.5 shrink-0" />
             </button>
 
             <button
               onClick={onExploreFeatures}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-base font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 shadow-xs hover:border-slate-400 transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl text-sm sm:text-base font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 shadow-xs hover:border-slate-400 transition-all"
             >
-              <Zap className="w-4 h-4 text-indigo-600" />
+              <Zap className="w-4 h-4 text-indigo-600 shrink-0" />
               <span>Explore Features</span>
             </button>
 
             <button
               onClick={onLoadSamplePaper}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl text-sm font-semibold text-indigo-700 bg-indigo-50/80 hover:bg-indigo-100 border border-indigo-200 transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs sm:text-sm font-semibold text-indigo-700 bg-indigo-50/80 hover:bg-indigo-100 border border-indigo-200 transition-all"
             >
-              <BookOpen className="w-4 h-4" />
+              <BookOpen className="w-4 h-4 shrink-0" />
               <span>View Sample Paper (80 Marks)</span>
             </button>
           </div>
 
           {/* Trust points */}
-          <div className="mt-10 pt-6 border-t border-slate-200/80 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-semibold text-slate-600">
-            <div className="flex items-center justify-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              <span>CBSE, PSEB & ICSE Formats</span>
+          <div className="mt-8 sm:mt-10 pt-6 border-t border-slate-200/80 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-semibold text-slate-600">
+            <div className="flex items-center justify-center gap-1.5 text-center">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>CBSE, PSEB & ICSE</span>
             </div>
-            <div className="flex items-center justify-center gap-1.5">
-              <Scale className="w-4 h-4 text-indigo-600" />
-              <span>Strict 40–100 Marks Guarantee</span>
+            <div className="flex items-center justify-center gap-1.5 text-center">
+              <Scale className="w-4 h-4 text-indigo-600 shrink-0" />
+              <span>40–100 Marks Plan</span>
             </div>
-            <div className="flex items-center justify-center gap-1.5">
-              <FileCheck2 className="w-4 h-4 text-blue-600" />
-              <span>Complete Step-by-Step Solutions</span>
+            <div className="flex items-center justify-center gap-1.5 text-center">
+              <FileCheck2 className="w-4 h-4 text-blue-600 shrink-0" />
+              <span>Step-by-Step Solutions</span>
             </div>
-            <div className="flex items-center justify-center gap-1.5">
-              <Download className="w-4 h-4 text-purple-600" />
-              <span>Printable A4 PDF & Word Export</span>
+            <div className="flex items-center justify-center gap-1.5 text-center">
+              <Download className="w-4 h-4 text-purple-600 shrink-0" />
+              <span>A4 PDF & Print Ready</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* Android App APK Download Banner */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-indigo-500/20 relative overflow-hidden">
+      <section className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-8 text-white shadow-xl border border-indigo-500/20 relative overflow-hidden">
           <div className="absolute -right-10 -bottom-10 w-60 h-60 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
-            <div className="flex items-start gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0 text-emerald-400 shadow-inner">
-                <Smartphone className="w-7 h-7" />
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-5 relative z-10">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0 text-emerald-400 shadow-inner">
+                <Smartphone className="w-6 h-6 sm:w-7 sm:h-7" />
               </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                    Download Native Android APK
+              <div className="space-y-1 min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                  <h3 className="text-lg sm:text-2xl font-bold text-white tracking-tight">
+                    Download Android APK
                   </h3>
-                  <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    Android 15 Compatible
+                  <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Android 15
                   </span>
-                  <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-500/20 text-indigo-200 border border-indigo-400/30">
-                    15.29 MB
+                  <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-indigo-500/20 text-indigo-200 border border-indigo-400/30">
+                    15.3 MB
                   </span>
                 </div>
-                <p className="text-sm text-slate-300 max-w-xl">
-                  Install PaperGenius AI directly on your Lava Android 15 phone or any Android device (SDK 24+). Full Jetpack Compose & Material 3 native experience.
+                <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
+                  Install PaperGenius AI directly on your Lava Android 15 phone or any Android device (SDK 24+).
                 </p>
-                <div className="pt-2 text-xs text-slate-400 flex items-center gap-4 flex-wrap">
-                  <span>✓ Built with Gradle & AndroidX</span>
+                <div className="pt-1.5 text-[11px] sm:text-xs text-slate-400 flex items-center gap-2 sm:gap-4 flex-wrap">
+                  <span>✓ Built with AndroidX</span>
                   <span>✓ Package: <code className="text-emerald-300 font-mono">com.papergenius.ai</code></span>
-                  <span>✓ Fast Offline & Camera Access</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
+            <div className="w-full lg:w-auto shrink-0">
               <a
                 href="/api/download-apk"
                 download="PaperGenius-AI.apk"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold text-slate-900 bg-emerald-400 hover:bg-emerald-300 active:bg-emerald-500 shadow-lg shadow-emerald-500/20 transition-all text-center"
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl text-xs sm:text-sm font-bold text-slate-900 bg-emerald-400 hover:bg-emerald-300 active:bg-emerald-500 shadow-lg shadow-emerald-500/20 transition-all text-center"
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-4 h-4 shrink-0" />
                 <span>Download APK (15.3 MB)</span>
               </a>
             </div>

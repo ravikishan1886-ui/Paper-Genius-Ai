@@ -338,37 +338,37 @@ export const GeneratorForm: React.FC<GeneratorFormProps> = ({ onPaperGenerated }
   );
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-5 sm:space-y-8">
       {/* Header */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-xs font-bold text-indigo-700 mb-2">
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               AI Question Paper Generator
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Create Examination Paper
             </h1>
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
               Configure board syllabus guidelines, upload textbook page photos, and let AI build balanced papers with full marking schemes.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
-              Board Support: CBSE • PSEB • ICSE
+            <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1.5 rounded-lg border border-slate-200">
+              CBSE • PSEB • ICSE
             </span>
           </div>
         </div>
       </div>
 
       {/* Main Grid: Form Sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         {/* Left Column: Form Fields (2 Cols) */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-5 sm:space-y-6">
           {/* Section 1: Education Board & Class */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-5">
+          <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-xs space-y-4 sm:space-y-5">
             <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
               <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">
                 1
@@ -923,17 +923,20 @@ export const GeneratorForm: React.FC<GeneratorFormProps> = ({ onPaperGenerated }
               type="button"
               onClick={handleGeneratePaper}
               disabled={isGenerating || uploadedPhotos.length === 0}
-              className="w-full py-4 px-6 rounded-2xl font-extrabold text-white text-base bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 hover:from-blue-800 hover:to-purple-700 shadow-lg shadow-indigo-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform active:scale-98"
+              className="w-full py-3.5 sm:py-4 px-3 sm:px-6 rounded-2xl font-extrabold text-white text-sm sm:text-base bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 hover:from-blue-800 hover:to-purple-700 shadow-lg shadow-indigo-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform active:scale-98"
             >
               {isGenerating ? (
                 <>
-                  <RefreshCw className="w-5 h-5 animate-spin text-white" />
+                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-white shrink-0" />
                   <span>Synthesizing Exam Paper...</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-5 h-5 text-amber-300" />
-                  <span>Generate Question Paper ({isCustomMarks ? customMarksInput : totalMarks}M)</span>
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
+                  <span>
+                    <span className="hidden sm:inline">Generate Question Paper</span>
+                    <span className="sm:hidden">Generate Paper</span> ({isCustomMarks ? customMarksInput : totalMarks}M)
+                  </span>
                 </>
               )}
             </button>

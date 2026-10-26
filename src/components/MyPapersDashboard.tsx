@@ -61,9 +61,9 @@ export const MyPapersDashboard: React.FC<MyPapersDashboardProps> = ({
   });
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs font-bold text-blue-700 mb-2">
             <FolderKanban className="w-3.5 h-3.5 text-blue-600" />
@@ -72,14 +72,14 @@ export const MyPapersDashboard: React.FC<MyPapersDashboardProps> = ({
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             My Question Papers
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Access your previously generated question papers, download vector PDFs, or edit them anytime.
           </p>
         </div>
 
         <button
           onClick={onStartGenerator}
-          className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-blue-700 to-indigo-600 hover:from-blue-800 hover:to-indigo-700 shadow-md shadow-indigo-600/20 transition-all active:scale-95 shrink-0"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-blue-700 to-indigo-600 hover:from-blue-800 hover:to-indigo-700 shadow-md shadow-indigo-600/20 transition-all active:scale-95 shrink-0"
         >
           <Sparkles className="w-4 h-4 text-amber-300" />
           <span>New Question Paper</span>
@@ -87,7 +87,7 @@ export const MyPapersDashboard: React.FC<MyPapersDashboardProps> = ({
       </div>
 
       {/* Search & Board Filter Bar */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
           <input
@@ -99,15 +99,17 @@ export const MyPapersDashboard: React.FC<MyPapersDashboardProps> = ({
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <Filter className="w-4 h-4 text-slate-400" />
-          <span className="text-xs font-bold text-slate-600">Board:</span>
+        <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
+          <span className="text-xs font-bold text-slate-600 flex items-center gap-1 mr-1">
+            <Filter className="w-3.5 h-3.5 text-slate-400" />
+            Board:
+          </span>
           {(['ALL', 'CBSE', 'PSEB', 'ICSE'] as const).map((b) => (
             <button
               key={b}
               type="button"
               onClick={() => setFilterBoard(b)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 filterBoard === b
                   ? 'bg-blue-600 text-white shadow-xs'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -121,7 +123,7 @@ export const MyPapersDashboard: React.FC<MyPapersDashboardProps> = ({
 
       {/* Papers Grid */}
       {filteredPapers.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredPapers.map((item) => (
             <div
               key={item.id}
