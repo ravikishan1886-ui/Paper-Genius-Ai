@@ -1,10 +1,23 @@
-import { FileText, Sparkles, FolderKanban, CheckCircle2, BookOpen, Smartphone, Download } from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  FileText,
+  Sparkles,
+  FolderKanban,
+  User,
+  LogOut,
+  LogIn,
+  UserPlus,
+  Cloud,
+  CheckCircle2,
+} from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
   currentView: 'home' | 'generator' | 'preview' | 'my-papers' | 'features' | 'about';
   onNavigate: (view: 'home' | 'generator' | 'preview' | 'my-papers' | 'features' | 'about') => void;
   savedPapersCount: number;
   hasActivePaper: boolean;
+  onOpenAuthModal: (mode: 'login' | 'signup') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -12,7 +25,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigate,
   savedPapersCount,
   hasActivePaper,
+  onOpenAuthModal,
 }) => {
+  const { user, logout, isFirebaseConfigured } = useAuth();
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
@@ -123,18 +140,82 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </nav>
 
-          {/* Action Buttons (Header Right) */}
+          {/* Action Buttons & Auth (Header Right) */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <a
-              href="/api/download-apk"
-              download="PaperGenius-AI.apk"
-              className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors shadow-xs"
-              title="Download Android APK (15.3 MB)"
-            >
-              <Smartphone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 shrink-0" />
-              <span>APK</span>
-            </a>
+            {/* User Auth Section */}
+            {user ? (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors text-left"
+                >
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs">
+                    {user.displayName ? user.displayName[0] : (user.email ? user.email[0] : 'U')}
+                  </div>
+                  <div className="hidden lg:block text-left pr-1">
+                    <p className="text-xs font-bold text-slate-800 leading-tight truncate max-w-[120px]">
+                      {user.displayName || user.email?.split('@')[0]}
+                    </p>
+                    <p className="text-[10px] text-emerald-600 font-semibold flex items-center gap-0.5">
+                      <Cloud className="w-2.5 h-2.5" />
+                      Cloud Synced
+                    </p>
+                  </div>
+                </button>
 
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50">
+                    <div className="px-3.5 py-2 border-b border-slate-100">
+                      <p className="text-xs font-bold text-slate-900 truncate">
+                        {user.displayName || 'Educator Account'}
+                      </p>
+                      <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onNavigate('my-papers');
+                      }}
+                      className="w-full text-left px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-2"
+                    >
+                      <FolderKanban className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>My Saved Papers</span>
+                    </button>
+                    <button
+                      onClick={async () => {
+                        setIsUserMenuOpen(false);
+                        await logout();
+                      }}
+                      className="w-full text-left px-3.5 py-2 text-xs font-medium text-red-600 hover:bg-red-50 flex items-center gap-2"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 sm:gap-2">
+                <button
+                  type="button"
+                  onClick={() => onOpenAuthModal('login')}
+                  className="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-colors"
+                >
+                  Log In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onOpenAuthModal('signup')}
+                  className="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 transition-colors hidden sm:inline-flex items-center gap-1"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>Sign Up</span>
+                </button>
+              </div>
+            )}
+
+            {/* Quick Generator CTA */}
             <button
               onClick={() => onNavigate('generator')}
               className="inline-flex items-center gap-1.5 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 hover:from-blue-800 hover:to-purple-700 shadow-md shadow-indigo-600/20 hover:shadow-lg transition-all active:scale-95 shrink-0"
@@ -193,14 +274,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             <FolderKanban className="w-3.5 h-3.5 text-slate-500" />
             My Papers {savedPapersCount > 0 ? `(${savedPapersCount})` : ''}
           </button>
-          <a
-            href="/api/download-apk"
-            download="PaperGenius-AI.apk"
-            className="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 flex items-center gap-1 min-h-[34px]"
-          >
-            <Download className="w-3.5 h-3.5 text-emerald-600" />
-            Download APK
-          </a>
           <button
             onClick={() => onNavigate('features')}
             className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-bold transition-all min-h-[34px] ${
@@ -221,6 +294,23 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             About
           </button>
+          {!user ? (
+            <button
+              onClick={() => onOpenAuthModal('login')}
+              className="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 flex items-center gap-1 min-h-[34px]"
+            >
+              <LogIn className="w-3.5 h-3.5 text-indigo-600" />
+              Log In
+            </button>
+          ) : (
+            <button
+              onClick={logout}
+              className="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-bold text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 flex items-center gap-1 min-h-[34px]"
+            >
+              <LogOut className="w-3.5 h-3.5 text-red-600" />
+              Sign Out
+            </button>
+          )}
         </div>
       </div>
     </header>

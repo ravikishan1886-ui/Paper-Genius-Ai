@@ -37,7 +37,7 @@ export const AboutView: React.FC = () => {
             <span>Privacy & Photo Retention Policy</span>
           </h3>
           <p className="text-xs text-slate-600">
-            Uploaded textbook page photographs are transmitted securely to our server-side API solely to perform OCR and question synthesis. We do not permanently store your photos. Generated question papers and answer keys are kept securely on your local browser device.
+            Uploaded textbook page photographs are transmitted securely to our server-side API solely to perform OCR and question synthesis. We do not permanently store your photos. Generated question papers and answer keys are stored securely in your private Firebase cloud account and local browser cache.
           </p>
         </div>
 

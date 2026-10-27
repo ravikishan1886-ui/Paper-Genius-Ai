@@ -62,11 +62,17 @@ export const PaperPreview: React.FC<PaperPreviewProps> = ({
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to regenerate question.');
+      const rawText = await response.text();
+      let data: any;
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        throw new Error('AI regeneration service is temporarily busy. Please retry.');
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.error || 'Failed to regenerate question.');
+      }
       if (data.success && data.question) {
         // Replace question in the section
         const updatedSections = paper.sections.map((section) => ({

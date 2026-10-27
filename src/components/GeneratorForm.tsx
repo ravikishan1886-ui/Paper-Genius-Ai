@@ -214,12 +214,22 @@ export const GeneratorForm: React.FC<GeneratorFormProps> = ({ onPaperGenerated }
         }),
       });
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || 'Failed to inspect textbook pages.');
+      const rawText = await response.text();
+      let data: any;
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        throw new Error(
+          rawText.includes('<!doctype') || rawText.includes('<html')
+            ? 'The AI inspection service is temporarily busy. Please wait a moment and try again.'
+            : 'Invalid server response received. Please try again.'
+        );
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to inspect textbook pages.');
+      }
+
       setAnalysisReport({
         pagesAnalyzed: uploadedPhotos.length,
         readabilityScore: data.readabilityScore || 85,
@@ -311,16 +321,26 @@ export const GeneratorForm: React.FC<GeneratorFormProps> = ({ onPaperGenerated }
       clearInterval(stepInterval);
       setGenerationStep(5);
 
-      if (!response.ok) {
-        const errJson = await response.json().catch(() => ({}));
-        throw new Error(errJson.error || 'Failed to generate question paper. Please verify photos and try again.');
+      const rawText = await response.text();
+      let result: any;
+      try {
+        result = JSON.parse(rawText);
+      } catch {
+        throw new Error(
+          rawText.includes('<!doctype') || rawText.includes('<html')
+            ? 'The AI generator service is currently experiencing high demand. Please try again in a few moments.'
+            : 'Invalid server response structure received. Please try again.'
+        );
       }
 
-      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result?.error || 'Failed to generate question paper. Please verify photos and try again.');
+      }
+
       if (result.success && result.paper) {
         onPaperGenerated(result.paper);
       } else {
-        throw new Error('Invalid response structure received from generator engine.');
+        throw new Error(result?.error || 'Invalid response structure received from generator engine.');
       }
     } catch (err: any) {
       clearInterval(stepInterval);

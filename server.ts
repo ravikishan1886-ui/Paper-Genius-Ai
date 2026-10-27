@@ -38,7 +38,13 @@ const getAiClient = () => {
 
 // Resilient Gemini call with fallback across supported models
 async function callGeminiWithFallback(ai: GoogleGenAI, params: any) {
-  const candidateModels = ['gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-flash-latest'];
+  // Model priority: gemini-3.8-flash (official standard), gemini-flash-latest, gemini-4-argon, gemini-3.1-flash-lite
+  const candidateModels = [
+    'gemini-3.8-flash',
+    'gemini-flash-latest',
+    'gemini-4-argon',
+    'gemini-3.1-flash-lite',
+  ];
   let lastError: any = null;
   for (const model of candidateModels) {
     try {
@@ -47,12 +53,10 @@ async function callGeminiWithFallback(ai: GoogleGenAI, params: any) {
         model,
       });
     } catch (err: any) {
-      console.warn(`Model ${model} attempt failed:`, err.message?.substring(0, 100));
+      console.warn(`Model ${model} attempt failed:`, err.message?.substring(0, 150));
       lastError = err;
-      if (err.message && (err.message.includes('503') || err.message.includes('high demand') || err.message.includes('UNAVAILABLE'))) {
-        continue; // Try next available model
-      }
-      throw err;
+      // On ANY failure (503 demand spikes, rate limits, timeouts, etc.), fallback to the next candidate model
+      continue;
     }
   }
   throw lastError;
@@ -457,8 +461,14 @@ app.get(['/api/download-apk', '/download/PaperGenius-AI.apk', '/PaperGenius-AI.a
     }
   }
 
+  // If not found locally, redirect browser to GitHub Actions build artifacts or show friendly guidance
+  if (req.headers.accept && req.headers.accept.includes('text/html')) {
+    return res.redirect('https://github.com/ravikishan1886-ui/Paper-Genius-Ai/actions');
+  }
+
   return res.status(404).json({
-    error: 'APK not found. Please trigger build first.',
+    error: 'APK not found on server disk. You can download the latest built APK directly from GitHub Actions: https://github.com/ravikishan1886-ui/Paper-Genius-Ai/actions',
+    githubActionsUrl: 'https://github.com/ravikishan1886-ui/Paper-Genius-Ai/actions',
   });
 });
 
@@ -483,6 +493,18 @@ app.get('/api/apk-status', (req, res) => {
   }
 
   return res.json({ exists: false });
+});
+
+// Global API error handler ensuring JSON responses are always returned
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (req.path.startsWith('/api/')) {
+    console.error('Unhandled API error on', req.path, err);
+    return res.status(500).json({
+      error: err?.message || 'A temporary server error occurred. Please try again.',
+      success: false,
+    });
+  }
+  next(err);
 });
 
 // Mount Vite middleware in dev mode, or serve static dist in prod

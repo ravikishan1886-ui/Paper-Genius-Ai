@@ -38,10 +38,10 @@ jobs:
         with:
           gradle-version: "9.3.1"
 
-      - name: Create temporary debug keystore
+      - name: Create signed application keystore
         run: |
           if [ ! -f "./debug.keystore" ]; then
-            echo "Generating debug keystore..."
+            echo "Generating signed application keystore..."
             keytool -genkey -v \
               -keystore ./debug.keystore \
               -storepass android \
@@ -50,7 +50,7 @@ jobs:
               -keyalg RSA \
               -keysize 2048 \
               -validity 10000 \
-              -dname "CN=Android Debug,O=Android,C=US"
+              -dname "CN=PaperGenius AI,OU=Education,O=PaperGenius AI,L=New Delhi,ST=Delhi,C=IN"
           else
             echo "debug.keystore already exists."
           fi

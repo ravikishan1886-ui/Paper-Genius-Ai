@@ -1,0 +1,51 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account profile and settings",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "email"]
+    },
+    "SavedPaper": {
+      "title": "SavedPaper",
+      "description": "Examination question paper saved to user account",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "board": { "type": "string" },
+        "classLevel": { "type": "string" },
+        "subject": { "type": "string" },
+        "examType": { "type": "string" },
+        "totalMarks": { "type": "number" },
+        "durationMinutes": { "type": "number" },
+        "schoolName": { "type": "string" },
+        "examinationHeading": { "type": "string" },
+        "generalInstructions": { "type": "array" },
+        "sections": { "type": "array" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "title", "board", "classLevel", "subject", "totalMarks", "sections"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "entity": "UserProfile",
+      "description": "Stores user profile data accessible only by the authenticated owner"
+    },
+    "/users/{userId}/papers/{paperId}": {
+      "entity": "SavedPaper",
+      "description": "Stores user generated question papers and answer keys"
+    }
+  }
+}

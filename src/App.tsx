@@ -6,17 +6,20 @@ import { PaperPreview } from './components/PaperPreview';
 import { MyPapersDashboard } from './components/MyPapersDashboard';
 import { FeaturesView } from './components/FeaturesView';
 import { AboutView } from './components/AboutView';
+import { AuthModal } from './components/AuthModal';
+import { AuthProvider } from './context/AuthContext';
 import { GeneratedPaper } from './types/paper';
 import { getSavedPapers, savePaper } from './utils/storage';
 import { DEMO_PREGENERATED_PAPER } from './data/sampleData';
-import { Sparkles, Heart } from 'lucide-react';
 
 type ViewType = 'home' | 'generator' | 'preview' | 'my-papers' | 'features' | 'about';
 
-export default function App() {
+function AppContent() {
   const [currentView, setCurrentView] = useState<ViewType>('home');
   const [activePaper, setActivePaper] = useState<GeneratedPaper | null>(null);
   const [savedCount, setSavedCount] = useState<number>(0);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
 
   // Load saved count on mount
   useEffect(() => {
@@ -50,6 +53,11 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleOpenAuth = (mode: 'login' | 'signup') => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-indigo-500 selection:text-white">
       {/* Navigation */}
@@ -58,6 +66,7 @@ export default function App() {
         onNavigate={handleNavigate}
         savedPapersCount={savedCount}
         hasActivePaper={Boolean(activePaper)}
+        onOpenAuthModal={handleOpenAuth}
       />
 
       {/* Main Content Area */}
@@ -86,6 +95,7 @@ export default function App() {
           <MyPapersDashboard
             onSelectPaper={handleSelectPaperFromDashboard}
             onStartGenerator={() => handleNavigate('generator')}
+            onOpenAuthModal={handleOpenAuth}
           />
         )}
 
@@ -162,6 +172,21 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Educator Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode={authModalMode}
+      />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
