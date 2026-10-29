@@ -22,6 +22,20 @@ android {
         buildConfigField("String", "GEMINI_API_KEY", "\"\"")
     }
 
+    signingConfigs {
+        create("customDebug") {
+            val rootKeystore = file("../../debug.keystore")
+            val projectKeystore = file("../debug.keystore")
+            val targetKeystore = if (projectKeystore.exists()) projectKeystore else rootKeystore
+            if (targetKeystore.exists()) {
+                storeFile = targetKeystore
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -32,6 +46,11 @@ android {
         }
         debug {
             isMinifyEnabled = false
+            val rootKeystore = file("../../debug.keystore")
+            val projectKeystore = file("../debug.keystore")
+            if (projectKeystore.exists() || rootKeystore.exists()) {
+                signingConfig = signingConfigs.getByName("customDebug")
+            }
         }
     }
 

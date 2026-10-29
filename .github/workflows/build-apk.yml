@@ -58,7 +58,8 @@ jobs:
             echo "ERROR: debug.keystore could not be created."
             exit 1
           fi
-          echo "debug.keystore confirmed."
+          cp ./debug.keystore android-app/debug.keystore 2>/dev/null || true
+          echo "debug.keystore confirmed in root and android-app."
 
       - name: Build Debug APK
         run: |
@@ -84,6 +85,18 @@ jobs:
             fi
           fi
           ls -lh app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Calculate and Print SHA-256 Hashes for Google Appeal
+        run: |
+          echo "=========================================================="
+          echo "APK FILE SHA-256 CHECKSUM:"
+          sha256sum app/build/outputs/apk/debug/app-debug.apk | awk '{print $1}'
+          echo "=========================================================="
+          if [ -f "./debug.keystore" ]; then
+            echo "CERTIFICATE SHA-256 FINGERPRINT:"
+            keytool -list -v -keystore ./debug.keystore -storepass android -alias androiddebugkey | grep "SHA256:" || true
+            echo "=========================================================="
+          fi
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
