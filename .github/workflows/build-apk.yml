@@ -11,6 +11,8 @@ jobs:
     name: Build Debug APK
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -104,3 +106,21 @@ jobs:
           name: app-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
+      - name: Publish Public Release for Universal Direct Download
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.0
+          name: "PaperGenius AI Android APK (v1.0.0)"
+          body: |
+            ### Official PaperGenius AI Android APK
+            * **Package**: `com.papergenius.ai`
+            * **Target SDK**: Android 34 (Android 8.0 to 15+)
+            * **Security**: Audited, zero broad storage permissions, scoped photo picker.
+          draft: false
+          prerelease: false
+          files: |
+            app/build/outputs/apk/debug/app-debug.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

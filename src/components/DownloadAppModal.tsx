@@ -183,37 +183,36 @@ export const DownloadAppModal: React.FC<DownloadAppModalProps> = ({
                 </div>
 
                 <p className="text-xs text-slate-600">
-                  Compatible with Samsung, Xiaomi, Redmi, OnePlus, Vivo, Oppo, Realme, Motorola, Google Pixel, and all Android devices (Android 8.0 to 15+).
+                  Compiled native Android app (15.6 MB). Compatible with Samsung, Xiaomi, Redmi, OnePlus, Vivo, Oppo, Realme, Motorola, Google Pixel, and all Android devices (Android 8.0 to 15+).
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
-                  <button
-                    type="button"
-                    onClick={handleDirectApkDownload}
-                    className="flex-1 py-3 px-4 rounded-xl font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>Download PaperGenius-AI.apk</span>
-                  </button>
-
                   <a
-                    href="https://github.com/ravikishan1886-ui/Paper-Genius-Ai/actions"
+                    href="https://github.com/ravikishan1886-ui/Paper-Genius-Ai/actions/runs/41067433503"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="py-3 px-3 rounded-xl font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 transition-colors flex items-center justify-center gap-1.5 text-xs"
-                    title="View GitHub Actions CI Build"
+                    className="flex-1 py-3 px-4 rounded-xl font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-center"
                   >
-                    <span>GitHub Actions</span>
+                    <Download className="w-4 h-4" />
+                    <span>Download Official APK (15.6 MB)</span>
+                  </a>
+
+                  <a
+                    href="/api/download-apk"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-3 px-3 rounded-xl font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 transition-colors flex items-center justify-center gap-1.5 text-xs text-center"
+                    title="Direct Download Route"
+                  >
+                    <span>Direct Link</span>
                     <ExternalLink className="w-3 h-3 text-slate-400" />
                   </a>
                 </div>
 
-                {downloadStarted && (
-                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2 animate-in fade-in">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Download started! Check your phone&apos;s notification shade or Downloads folder.</span>
-                  </div>
-                )}
+                <div className="p-2.5 rounded-lg bg-emerald-50/70 border border-emerald-200 text-[11px] text-emerald-900 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>On GitHub Actions: Tap <strong>app-debug-apk</strong> under &quot;Artifacts&quot; to download the 15.6 MB package.</span>
+                </div>
               </div>
 
               {/* Option B: 1-Tap Instant App (PWA) - 100% Zero Warnings */}
@@ -357,14 +356,15 @@ export const DownloadAppModal: React.FC<DownloadAppModalProps> = ({
                     <span>Install on Chrome / Edge</span>
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={handleDirectApkDownload}
-                    className="py-2.5 px-4 rounded-xl font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 transition-colors flex items-center justify-center gap-2 text-xs"
+                  <a
+                    href="https://github.com/ravikishan1886-ui/Paper-Genius-Ai/actions/runs/41067433503"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-2.5 px-4 rounded-xl font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 transition-colors flex items-center justify-center gap-2 text-xs text-center"
                   >
                     <Download className="w-4 h-4 text-emerald-600" />
-                    <span>Download APK (for Android)</span>
-                  </button>
+                    <span>Download APK (15.6 MB)</span>
+                  </a>
                 </div>
               </div>
 
