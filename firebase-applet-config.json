@@ -1,8 +1,12 @@
 {
-  "projectId": "papergenius-ai-app",
-  "appId": "1:123456789012:web:abcdef123456",
-  "apiKey": "AIzaSyDummyKeyForBuildAndDevMode123456",
-  "authDomain": "papergenius-ai-app.firebaseapp.com",
-  "storageBucket": "papergenius-ai-app.appspot.com",
-  "messagingSenderId": "123456789012"
+  "projectId": "gen-lang-client-0182572969",
+  "appId": "1:533295872672:web:0c83d223fc43d5817ae7c5",
+  "apiKey": "AIzaSyDvU4BMRib_GL3RvSRyQvNC5gbTtiuJQ6A",
+  "authDomain": "gen-lang-client-0182572969.firebaseapp.com",
+  "firestoreDatabaseId": "ai-studio-papergeniusai-0b5f047e-77a3-4798-9711-ac5e4bc3297c",
+  "storageBucket": "gen-lang-client-0182572969.firebasestorage.app",
+  "messagingSenderId": "533295872672",
+  "measurementId": "",
+  "oAuthClientId": "533295872672-5csabum0rfrgtrectm0jb2fsb6an89es.apps.googleusercontent.com",
+  "recaptchaSiteKey": ""
 }
