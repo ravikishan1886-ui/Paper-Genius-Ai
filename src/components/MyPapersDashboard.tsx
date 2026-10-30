@@ -34,7 +34,7 @@ export const MyPapersDashboard: React.FC<MyPapersDashboardProps> = ({
   onStartGenerator,
   onOpenAuthModal,
 }) => {
-  const { user, savePaperToCloud, getCloudPapers, isFirebaseConfigured } = useAuth();
+  const { user, savePaperToCloud, getCloudPapers, isFirebaseConfigured, exportUserData } = useAuth();
   const [papers, setPapers] = useState<GeneratedPaper[]>(() => getSavedPapers());
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filterBoard, setFilterBoard] = useState<string>('ALL');
@@ -164,9 +164,20 @@ export const MyPapersDashboard: React.FC<MyPapersDashboardProps> = ({
               </p>
             </div>
           </div>
-          <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[11px]">
-            <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Cloud Active
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={exportUserData}
+              className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 font-bold text-[11px] transition-colors shadow-2xs"
+              title="Download structured JSON archive of all saved papers (DPDP Act Data Portability)"
+            >
+              <Download className="w-3 h-3 text-indigo-600" />
+              <span>Export JSON</span>
+            </button>
+            <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[11px]">
+              <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Cloud Active
+            </span>
+          </div>
         </div>
       ) : (
         <div className="bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">

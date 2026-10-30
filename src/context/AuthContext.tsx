@@ -21,7 +21,7 @@ import {
 } from 'firebase/firestore';
 import { auth, db, isFirebaseConfigured } from '../lib/firebase';
 import { GeneratedPaper } from '../types/paper';
-import { getSavedPapers, savePaper as saveLocalPaper, deletePaper as deleteLocalPaper } from '../utils/storage';
+import { getSavedPapers, savePaper as saveLocalPaper, deletePaper as deleteLocalPaper, clearAllLocalPapers } from '../utils/storage';
 
 export interface EducatorUser {
   uid: string;
@@ -44,6 +44,9 @@ export interface AuthContextType {
   deleteUserPaper: (paperId: string) => Promise<void>;
   savePaperToCloud: (paper: GeneratedPaper) => Promise<void>;
   getCloudPapers: () => Promise<GeneratedPaper[]>;
+  exportUserData: () => Promise<void>;
+  deleteAllUserData: () => Promise<void>;
+  clearLocalDataOnly: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -220,6 +223,67 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const exportUserData = async (): Promise<void> => {
+    let papers: GeneratedPaper[] = [];
+    if (isFirebaseConfigured && auth && db && auth.currentUser) {
+      papers = await fetchUserPapers();
+    }
+    if (papers.length === 0) {
+      papers = getSavedPapers();
+    }
+    const exportPayload = {
+      exportedAt: new Date().toISOString(),
+      service: 'PaperGenius AI',
+      complianceNotice: 'Generated under DPDP Act 2023 & GDPR Right to Data Portability',
+      educatorProfile: {
+        id: user?.uid || 'offline-educator',
+        email: user?.email || 'offline-account',
+        displayName: user?.displayName || 'Educator',
+      },
+      papersTotal: papers.length,
+      savedPapers: papers,
+    };
+    const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `PaperGenius-Data-Export-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const deleteAllUserData = async (): Promise<void> => {
+    // 1. Purge all Firestore data
+    if (isFirebaseConfigured && auth && db && auth.currentUser) {
+      try {
+        const papersRef = collection(db, 'users', auth.currentUser.uid, 'papers');
+        const snapshot = await getDocs(papersRef);
+        for (const docSnapshot of snapshot.docs) {
+          await deleteDoc(docSnapshot.ref);
+        }
+        const userDocRef = doc(db, 'users', auth.currentUser.uid);
+        await deleteDoc(userDocRef);
+        try {
+          await auth.currentUser.delete();
+        } catch {
+          await signOut(auth);
+        }
+      } catch (err) {
+        console.warn('Error purging Firestore account data:', err);
+      }
+    }
+    // 2. Clear local data
+    localStorage.removeItem(LOCAL_USER_KEY);
+    clearAllLocalPapers();
+    setUser(null);
+  };
+
+  const clearLocalDataOnly = (): void => {
+    clearAllLocalPapers();
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -236,6 +300,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         deleteUserPaper,
         savePaperToCloud: saveUserPaper,
         getCloudPapers: fetchUserPapers,
+        exportUserData,
+        deleteAllUserData,
+        clearLocalDataOnly,
       }}
     >
       {children}

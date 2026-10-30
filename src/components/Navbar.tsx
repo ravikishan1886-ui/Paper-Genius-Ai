@@ -9,15 +9,21 @@ import {
   UserPlus,
   Cloud,
   CheckCircle2,
+  ShieldCheck,
+  Smartphone,
+  Download,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
+export type AppViewType = 'home' | 'generator' | 'preview' | 'my-papers' | 'features' | 'about' | 'security-privacy';
+
 interface NavbarProps {
-  currentView: 'home' | 'generator' | 'preview' | 'my-papers' | 'features' | 'about';
-  onNavigate: (view: 'home' | 'generator' | 'preview' | 'my-papers' | 'features' | 'about') => void;
+  currentView: AppViewType;
+  onNavigate: (view: AppViewType) => void;
   savedPapersCount: number;
   hasActivePaper: boolean;
   onOpenAuthModal: (mode: 'login' | 'signup') => void;
+  onOpenDownloadModal?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -26,6 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   savedPapersCount,
   hasActivePaper,
   onOpenAuthModal,
+  onOpenDownloadModal,
 }) => {
   const { user, logout, isFirebaseConfigured } = useAuth();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -138,6 +145,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               About
             </button>
+
+            <button
+              onClick={() => onNavigate('security-privacy')}
+              className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1.5 ${
+                currentView === 'security-privacy'
+                  ? 'text-emerald-700 bg-emerald-50'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>Privacy &amp; Security</span>
+            </button>
           </nav>
 
           {/* Action Buttons & Auth (Header Right) */}
@@ -183,6 +202,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <span>My Saved Papers</span>
                     </button>
                     <button
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onNavigate('security-privacy');
+                      }}
+                      className="w-full text-left px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-2"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Privacy &amp; Data Security</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onOpenDownloadModal?.();
+                      }}
+                      className="w-full text-left px-3.5 py-2 text-xs font-medium text-emerald-700 hover:bg-emerald-50 flex items-center gap-2"
+                    >
+                      <Smartphone className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Download Mobile App / APK</span>
+                    </button>
+                    <button
                       onClick={async () => {
                         setIsUserMenuOpen(false);
                         await logout();
@@ -213,6 +252,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <span>Sign Up</span>
                 </button>
               </div>
+            )}
+
+            {/* Download App / APK Button */}
+            {onOpenDownloadModal && (
+              <button
+                type="button"
+                onClick={onOpenDownloadModal}
+                className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors shadow-2xs shrink-0"
+                title="Download APK for Android or install on iOS / PC"
+              >
+                <Smartphone className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Get App / APK</span>
+              </button>
             )}
 
             {/* Quick Generator CTA */}
@@ -294,6 +346,26 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             About
           </button>
+          <button
+            onClick={() => onNavigate('security-privacy')}
+            className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-bold transition-all min-h-[34px] flex items-center gap-1 ${
+              currentView === 'security-privacy'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'text-slate-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100'
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Privacy</span>
+          </button>
+          {onOpenDownloadModal && (
+            <button
+              onClick={onOpenDownloadModal}
+              className="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-bold transition-all min-h-[34px] flex items-center gap-1 bg-emerald-600 text-white shadow-xs hover:bg-emerald-700"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Get APK</span>
+            </button>
+          )}
           {!user ? (
             <button
               onClick={() => onOpenAuthModal('login')}

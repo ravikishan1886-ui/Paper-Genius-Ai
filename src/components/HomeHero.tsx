@@ -12,18 +12,21 @@ import {
   Zap,
   Cloud,
   Check,
+  Smartphone,
 } from 'lucide-react';
 
 interface HomeHeroProps {
   onStartGenerator: () => void;
   onExploreFeatures: () => void;
   onLoadSamplePaper: () => void;
+  onOpenDownloadModal?: () => void;
 }
 
 export const HomeHero: React.FC<HomeHeroProps> = ({
   onStartGenerator,
   onExploreFeatures,
   onLoadSamplePaper,
+  onOpenDownloadModal,
 }) => {
   return (
     <div className="space-y-12 sm:space-y-16 pb-16">
@@ -62,9 +65,20 @@ export const HomeHero: React.FC<HomeHeroProps> = ({
               <ArrowRight className="w-4 h-4 ml-0.5 shrink-0" />
             </button>
 
+            {onOpenDownloadModal && (
+              <button
+                type="button"
+                onClick={onOpenDownloadModal}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:px-5 sm:py-3.5 rounded-xl text-sm sm:text-base font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 shadow-xs transition-all"
+              >
+                <Smartphone className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Get App / APK</span>
+              </button>
+            )}
+
             <button
               onClick={onExploreFeatures}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl text-sm sm:text-base font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 shadow-xs hover:border-slate-400 transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:px-5 sm:py-3.5 rounded-xl text-sm sm:text-base font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 shadow-xs hover:border-slate-400 transition-all"
             >
               <Zap className="w-4 h-4 text-indigo-600 shrink-0" />
               <span>Explore Features</span>
@@ -75,7 +89,7 @@ export const HomeHero: React.FC<HomeHeroProps> = ({
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs sm:text-sm font-semibold text-indigo-700 bg-indigo-50/80 hover:bg-indigo-100 border border-indigo-200 transition-all"
             >
               <BookOpen className="w-4 h-4 shrink-0" />
-              <span>View Sample Paper (80 Marks)</span>
+              <span>Sample (80 M)</span>
             </button>
           </div>
 

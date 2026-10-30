@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Default deny catch-all safety net
+    // Default-deny catch-all safety net
     match /{document=**} {
       allow read, write: if false;
     }
@@ -19,6 +19,22 @@ service cloud.firestore {
       return id is string && id.size() > 0 && id.size() <= 128;
     }
 
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['id', 'email'])
+        && data.id == request.auth.uid
+        && data.email is string
+        && data.email.size() <= 254;
+    }
+
+    function isValidSavedPaper(data, userId) {
+      return data.keys().hasAll(['id', 'userId', 'title', 'board', 'classLevel', 'subject', 'totalMarks'])
+        && data.userId == userId
+        && data.title is string
+        && data.title.size() <= 300
+        && data.totalMarks is number
+        && data.totalMarks > 0;
+    }
+
     // Connection test document
     match /test/{docId} {
       allow read: if true;
@@ -29,13 +45,13 @@ service cloud.firestore {
     match /users/{userId} {
       allow get: if isOwner(userId);
       allow list: if false;
-      allow create, update: if isOwner(userId) && isValidId(userId);
+      allow create, update: if isOwner(userId) && isValidId(userId) && isValidUserProfile(request.resource.data);
       allow delete: if isOwner(userId);
 
       // User's Saved Question Papers Subcollection
       match /papers/{paperId} {
         allow read: if isOwner(userId);
-        allow create, update: if isOwner(userId) && isValidId(paperId);
+        allow create, update: if isOwner(userId) && isValidId(paperId) && isValidSavedPaper(request.resource.data, userId);
         allow delete: if isOwner(userId);
       }
     }

@@ -77,3 +77,22 @@ export function duplicatePaper(paperId: string): GeneratedPaper | null {
     return null;
   }
 }
+
+export function clearAllLocalPapers(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (err) {
+    console.error('Failed to clear local papers:', err);
+  }
+}
+
+export function exportAllLocalPapersJson(): string {
+  const papers = getSavedPapers();
+  return JSON.stringify({
+    exportedAt: new Date().toISOString(),
+    generator: 'PaperGenius AI',
+    papersCount: papers.length,
+    papers,
+  }, null, 2);
+}
+

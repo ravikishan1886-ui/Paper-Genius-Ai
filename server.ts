@@ -447,6 +447,8 @@ app.get(['/api/download-apk', '/download/PaperGenius-AI.apk', '/PaperGenius-AI.a
   const candidatePaths = [
     path.resolve(__dirname, 'android-app/app/build/outputs/apk/debug/app-debug.apk'),
     path.resolve(__dirname, 'app/build/outputs/apk/debug/app-debug.apk'),
+    path.resolve(__dirname, 'public/PaperGenius-AI.apk'),
+    path.resolve(__dirname, 'dist/PaperGenius-AI.apk'),
     path.resolve(__dirname, 'android-app/app/build/outputs/apk/release/app-release.apk'),
   ];
 
@@ -456,6 +458,7 @@ app.get(['/api/download-apk', '/download/PaperGenius-AI.apk', '/PaperGenius-AI.a
       res.setHeader('Content-Type', 'application/vnd.android.package-archive');
       res.setHeader('Content-Disposition', 'attachment; filename="PaperGenius-AI.apk"');
       res.setHeader('Content-Length', stats.size);
+      res.setHeader('Cache-Control', 'public, max-age=3600');
       const stream = fs.createReadStream(apkPath);
       return stream.pipe(res);
     }
@@ -477,6 +480,8 @@ app.get('/api/apk-status', (req, res) => {
   const candidatePaths = [
     path.resolve(__dirname, 'android-app/app/build/outputs/apk/debug/app-debug.apk'),
     path.resolve(__dirname, 'app/build/outputs/apk/debug/app-debug.apk'),
+    path.resolve(__dirname, 'public/PaperGenius-AI.apk'),
+    path.resolve(__dirname, 'dist/PaperGenius-AI.apk'),
   ];
 
   for (const apkPath of candidatePaths) {
