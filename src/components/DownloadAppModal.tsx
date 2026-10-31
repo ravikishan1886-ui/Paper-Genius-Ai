@@ -183,35 +183,48 @@ export const DownloadAppModal: React.FC<DownloadAppModalProps> = ({
                 </div>
 
                 <p className="text-xs text-slate-600">
-                  Compiled native Android app (15.6 MB). Compatible with Samsung, Xiaomi, Redmi, OnePlus, Vivo, Oppo, Realme, Motorola, Google Pixel, and all Android devices (Android 8.0 to 15+).
+                  Direct Android package (16.0 MB, pure <code>.apk</code> format). Compatible with Xiaomi, Redmi, Samsung, OnePlus, Vivo, Oppo, Realme, Motorola, Google Pixel, and all Android devices (Android 8.0 to 15+).
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
                   <a
-                    href="https://github.com/ravikishan1886-ui/Paper-Genius-Ai/actions/runs/41067433503"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="/api/download-apk"
+                    download="PaperGenius-AI.apk"
                     className="flex-1 py-3 px-4 rounded-xl font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-center"
                   >
                     <Download className="w-4 h-4" />
-                    <span>Download Official APK (15.6 MB)</span>
+                    <span>Download PaperGenius-AI.apk (16 MB)</span>
                   </a>
 
                   <a
-                    href="/api/download-apk"
+                    href="https://github.com/ravikishan1886-ui/Paper-Genius-Ai/releases/download/v1.0.0/app-debug.apk"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="py-3 px-3 rounded-xl font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 transition-colors flex items-center justify-center gap-1.5 text-xs text-center"
-                    title="Direct Download Route"
+                    title="Direct GitHub Mirror Download"
                   >
-                    <span>Direct Link</span>
+                    <span>GitHub Mirror</span>
                     <ExternalLink className="w-3 h-3 text-slate-400" />
                   </a>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-emerald-50/70 border border-emerald-200 text-[11px] text-emerald-900 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>On GitHub Actions: Tap <strong>app-debug-apk</strong> under &quot;Artifacts&quot; to download the 15.6 MB package.</span>
+                {/* 'Something is wrong' fix notice */}
+                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 space-y-1.5 text-xs">
+                  <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>Seeing &quot;Something is wrong&quot; or &quot;Can&apos;t open file&quot;?</span>
+                  </div>
+                  <ul className="list-disc pl-5 space-y-1 text-[11px] text-amber-900 leading-relaxed">
+                    <li>
+                      <strong>Check file extension:</strong> Ensure you are opening <code>PaperGenius-AI.apk</code> (not a <code>.zip</code> file). If you downloaded a <code>.zip</code> from GitHub Actions earlier, your phone cannot install a zip directly. Use the green <strong>Download PaperGenius-AI.apk</strong> button above.
+                    </li>
+                    <li>
+                      <strong>Google Play Protect / Xiaomi Scanner:</strong> If a warning appears, tap <strong>&quot;More details ⌄&quot;</strong> and choose <strong>&quot;Install anyway&quot;</strong>.
+                    </li>
+                    <li>
+                      <strong>Alternative:</strong> Use Option 2 below to install the Instant App with 0 warnings.
+                    </li>
+                  </ul>
                 </div>
               </div>
 
@@ -232,7 +245,7 @@ export const DownloadAppModal: React.FC<DownloadAppModalProps> = ({
                 </div>
 
                 <p className="text-xs text-indigo-900">
-                  Want to skip sideloading prompts completely? Install directly from Chrome or Brave. It opens in full screen like a native app.
+                  Want to skip all sideloading warnings completely? Install directly from your mobile browser. It opens in full screen like a native app.
                 </p>
 
                 <button
@@ -249,13 +262,12 @@ export const DownloadAppModal: React.FC<DownloadAppModalProps> = ({
               <div className="p-3.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 space-y-2 text-xs">
                 <h5 className="font-bold text-slate-900 flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                  <span>Quick Android Installation Steps:</span>
+                  <span>3-Step Installation Guide:</span>
                 </h5>
                 <ol className="list-decimal pl-5 space-y-1 text-[11px] text-slate-600 leading-relaxed">
-                  <li>Tap <strong>Download PaperGenius-AI.apk</strong> above.</li>
-                  <li>When downloaded, open the notification or find <code>PaperGenius-AI.apk</code> in your <strong>Files / Downloads</strong> app.</li>
-                  <li>Tap <strong>Install</strong>. If your phone asks permission to install from your browser/files, tap <strong>Allow</strong>.</li>
-                  <li>If Google Play Protect displays a prompt, tap <strong>&quot;More details ⌄&quot;</strong> then <strong>&quot;Install anyway&quot;</strong>.</li>
+                  <li>Tap the green <strong>Download PaperGenius-AI.apk</strong> button above.</li>
+                  <li>In your phone's notification bar or <strong>Files / Downloads</strong> folder, tap <code>PaperGenius-AI.apk</code>.</li>
+                  <li>Tap <strong>Install</strong> (if prompted by Play Protect, tap <em>&quot;More details ⌄&quot;</em> → <em>&quot;Install anyway&quot;</em>).</li>
                 </ol>
               </div>
             </div>
@@ -357,13 +369,12 @@ export const DownloadAppModal: React.FC<DownloadAppModalProps> = ({
                   </button>
 
                   <a
-                    href="https://github.com/ravikishan1886-ui/Paper-Genius-Ai/actions/runs/41067433503"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="/api/download-apk"
+                    download="PaperGenius-AI.apk"
                     className="py-2.5 px-4 rounded-xl font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 transition-colors flex items-center justify-center gap-2 text-xs text-center"
                   >
                     <Download className="w-4 h-4 text-emerald-600" />
-                    <span>Download APK (15.6 MB)</span>
+                    <span>Download APK (16 MB)</span>
                   </a>
                 </div>
               </div>
