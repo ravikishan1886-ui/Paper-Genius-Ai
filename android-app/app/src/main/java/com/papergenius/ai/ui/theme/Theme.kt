@@ -39,8 +39,12 @@ fun PaperGeniusTheme(
         SideEffect {
             val window = (view.context as? Activity)?.window
             if (window != null) {
-                window.statusBarColor = SurfaceWhite.toArgb()
-                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
+                try {
+                    WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
+                    WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = true
+                } catch (ignored: Exception) {
+                    // Safe fallback on OEM custom roms
+                }
             }
         }
     }

@@ -1,9 +1,12 @@
 package com.papergenius.ai
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -11,7 +14,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.papergenius.ai.ui.components.AppBottomBar
 import com.papergenius.ai.ui.components.AppTopBar
 import com.papergenius.ai.ui.screens.*
@@ -21,19 +23,27 @@ import com.papergenius.ai.viewmodel.PaperGeniusViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: PaperGeniusViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        setContent {
-            PaperGeniusTheme {
-                MainContent()
+        try {
+            setContent {
+                PaperGeniusTheme {
+                    MainContent(viewModel = viewModel)
+                }
             }
+        } catch (e: Throwable) {
+            Log.e("MainActivity", "Fatal initialization error caught in setContent", e)
         }
     }
 }
 
 @Composable
 fun MainContent(
-    viewModel: PaperGeniusViewModel = viewModel()
+    viewModel: PaperGeniusViewModel
 ) {
     val currentScreen by viewModel.currentScreen.collectAsState()
     val statusMessage by viewModel.statusMessage.collectAsState()

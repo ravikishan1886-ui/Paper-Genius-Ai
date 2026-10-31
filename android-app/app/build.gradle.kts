@@ -13,6 +13,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -26,19 +27,23 @@ android {
         create("customDebug") {
             val rootKeystore = file("../../debug.keystore")
             val projectKeystore = file("../debug.keystore")
-            val targetKeystore = if (projectKeystore.exists()) projectKeystore else rootKeystore
-            if (targetKeystore.exists()) {
-                storeFile = targetKeystore
-                storePassword = "android"
-                keyAlias = "androiddebugkey"
-                keyPassword = "android"
+            val localKeystore = file("debug.keystore")
+            val targetKeystore = when {
+                projectKeystore.exists() -> projectKeystore
+                rootKeystore.exists() -> rootKeystore
+                else -> localKeystore
             }
+            storeFile = targetKeystore
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
         }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("customDebug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -46,11 +51,7 @@ android {
         }
         debug {
             isMinifyEnabled = false
-            val rootKeystore = file("../../debug.keystore")
-            val projectKeystore = file("../debug.keystore")
-            if (projectKeystore.exists() || rootKeystore.exists()) {
-                signingConfig = signingConfigs.getByName("customDebug")
-            }
+            signingConfig = signingConfigs.getByName("customDebug")
         }
     }
 

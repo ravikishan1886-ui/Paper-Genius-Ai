@@ -210,7 +210,7 @@ object SampleData {
                 "Carbon covalent bonding & esterification",
                 "Mendelian monohybrid inheritance & Punnett squares"
             ),
-            createdAt = System.currentTimeMillis() - 3600000L
+            createdAt = "2026-10-31 09:00"
         )
     }
 

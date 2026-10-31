@@ -62,15 +62,16 @@ data class QuestionItem(
     var solutionSteps: List<String>? = null,
     val markingScheme: String? = null,
     val chapterOrTopic: String? = null,
-    val diagramNote: String? = null,
-    val number: Int = questionNumber,
-    val text: String = questionText,
-    val correctAnswer: String = answerKey,
-    val explanation: String? = markingScheme,
-    val chapter: String? = chapterOrTopic,
-    val hasInternalChoice: Boolean = internalChoice != null,
-    val orQuestion: String? = internalChoice?.questionText
+    val diagramNote: String? = null
 ) {
+    val number: Int get() = questionNumber
+    val text: String get() = questionText
+    val correctAnswer: String get() = answerKey
+    val explanation: String? get() = markingScheme
+    val chapter: String? get() = chapterOrTopic
+    val hasInternalChoice: Boolean get() = internalChoice != null
+    val orQuestion: String? get() = internalChoice?.questionText
+
     constructor(
         id: String = java.util.UUID.randomUUID().toString(),
         number: Int,
@@ -96,14 +97,7 @@ data class QuestionItem(
         solutionSteps = null,
         markingScheme = explanation,
         chapterOrTopic = chapter,
-        diagramNote = null,
-        number = number,
-        text = text,
-        correctAnswer = correctAnswer,
-        explanation = explanation,
-        chapter = chapter,
-        hasInternalChoice = hasInternalChoice,
-        orQuestion = orQuestion
+        diagramNote = null
     )
 }
 
@@ -157,13 +151,13 @@ data class GeneratedPaper(
     val sections: List<PaperSection> = emptyList(),
     val topicsCovered: List<String> = emptyList(),
     val analysisReport: AnalysisReport? = null,
-    val createdAt: Any = "",
-    val updatedAt: Any = "",
-    val className: String = classLevel,
-    val duration: String = "$durationMinutes mins",
-    val uploadedPagesCount: Int = 0,
-    val analyzedTopics: List<String> = topicsCovered
+    val createdAt: String = "",
+    val updatedAt: String = "",
+    val uploadedPagesCount: Int = 0
 ) {
+    val className: String get() = classLevel
+    val duration: String get() = "$durationMinutes mins"
+    val analyzedTopics: List<String> get() = topicsCovered
     val totalQuestionsCount: Int
         get() = sections.sumOf { it.questions.size }
 }
@@ -175,10 +169,11 @@ data class UploadedPagePhoto(
     val base64Data: String? = null,
     val sizeBytes: Long = 0,
     val analysisSummary: String? = null,
-    val detectedKeywords: List<String> = emptyList(),
-    val uriString: String? = localUriString,
-    val fileSizeBytes: Long = sizeBytes
-)
+    val detectedKeywords: List<String> = emptyList()
+) {
+    val uriString: String? get() = localUriString
+    val fileSizeBytes: Long get() = sizeBytes
+}
 
 data class GeneratePaperParams(
     val board: EducationBoard,

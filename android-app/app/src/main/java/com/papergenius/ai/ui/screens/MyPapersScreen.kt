@@ -119,12 +119,7 @@ fun MyPapersScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(papers, key = { it.id }) { paper ->
-                    val dateStr = when (val c = paper.createdAt) {
-                        is Long -> dateFormat.format(Date(c))
-                        is Number -> dateFormat.format(Date(c.toLong()))
-                        is String -> c.ifBlank { "Recent" }
-                        else -> "Recent"
-                    }
+                    val dateStr = paper.createdAt.ifBlank { "Recent" }
                     PaperListItem(
                         paper = paper,
                         formattedDate = dateStr,

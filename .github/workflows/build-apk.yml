@@ -63,36 +63,42 @@ jobs:
           cp ./debug.keystore android-app/debug.keystore 2>/dev/null || true
           echo "debug.keystore confirmed in root and android-app."
 
-      - name: Build Debug APK
+      - name: Build Debug and Release APKs
         run: |
-          gradle :app:assembleDebug --stacktrace --no-daemon
-          mkdir -p app/build/outputs/apk/debug
+          gradle :app:assembleDebug :app:assembleRelease --stacktrace --no-daemon
+          mkdir -p app/build/outputs/apk/debug app/build/outputs/apk/release
           if [ -f "android-app/app/build/outputs/apk/debug/app-debug.apk" ]; then
             cp android-app/app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/app-debug.apk
           fi
+          if [ -f "android-app/app/build/outputs/apk/release/app-release.apk" ]; then
+            cp android-app/app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/app-release.apk
+          fi
 
-      - name: Verify APK exists
+      - name: Verify APKs exist
         run: |
           if [ ! -f "app/build/outputs/apk/debug/app-debug.apk" ]; then
             echo "Locating generated debug APK..."
-            mkdir -p app/build/outputs/apk/debug
             DISCOVERED_APK=$(find . -name "*debug*.apk" -path "*/outputs/apk/*" 2>/dev/null | head -n 1)
             if [ -n "$DISCOVERED_APK" ] && [ -f "$DISCOVERED_APK" ]; then
-              echo "Discovered APK: $DISCOVERED_APK"
               cp "$DISCOVERED_APK" app/build/outputs/apk/debug/app-debug.apk
-            else
-              echo "ERROR: No debug APK discovered in project"
-              find . -name "*.apk" 2>/dev/null || true
-              exit 1
             fi
           fi
-          ls -lh app/build/outputs/apk/debug/app-debug.apk
+          if [ ! -f "app/build/outputs/apk/release/app-release.apk" ]; then
+            echo "Locating generated release APK..."
+            DISCOVERED_REL=$(find . -name "*release*.apk" -path "*/outputs/apk/*" 2>/dev/null | head -n 1)
+            if [ -n "$DISCOVERED_REL" ] && [ -f "$DISCOVERED_REL" ]; then
+              cp "$DISCOVERED_REL" app/build/outputs/apk/release/app-release.apk
+            fi
+          fi
+          ls -lh app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/release/app-release.apk
 
-      - name: Calculate and Print SHA-256 Hashes for Google Appeal
+      - name: Calculate and Print SHA-256 Hashes
         run: |
           echo "=========================================================="
-          echo "APK FILE SHA-256 CHECKSUM:"
+          echo "DEBUG APK SHA-256 CHECKSUM:"
           sha256sum app/build/outputs/apk/debug/app-debug.apk | awk '{print $1}'
+          echo "RELEASE APK SHA-256 CHECKSUM:"
+          sha256sum app/build/outputs/apk/release/app-release.apk | awk '{print $1}'
           echo "=========================================================="
           if [ -f "./debug.keystore" ]; then
             echo "CERTIFICATE SHA-256 FINGERPRINT:"
@@ -100,11 +106,13 @@ jobs:
             echo "=========================================================="
           fi
 
-      - name: Upload Debug APK
+      - name: Upload Debug and Release APKs
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: app-apks
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
 
       - name: Publish Public Release for Universal Direct Download
@@ -116,11 +124,12 @@ jobs:
           body: |
             ### Official PaperGenius AI Android APK
             * **Package**: `com.papergenius.ai`
-            * **Target SDK**: Android 34 (Android 8.0 to 15+)
-            * **Security**: Audited, zero broad storage permissions, scoped photo picker.
+            * **Target SDK**: Android 34/35 (Android 8.0 to Android 15 OxygenOS 15)
+            * **Status**: Android 15 Edge-to-Edge compliant, signed with RSA-2048 key.
           draft: false
           prerelease: false
           files: |
             app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/release/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

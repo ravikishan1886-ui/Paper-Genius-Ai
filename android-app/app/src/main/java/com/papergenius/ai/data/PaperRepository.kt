@@ -28,19 +28,23 @@ class PaperRepository(private val context: Context) {
     @Synchronized
     private fun loadPapers() {
         try {
-            if (!papersFile.exists()) {
-                val initial = listOf(SampleData.samplePaper)
-                saveToFile(initial)
-                _papers.value = initial
-            } else {
+            if (papersFile.exists()) {
                 val json = papersFile.readText()
-                val type = object : TypeToken<List<GeneratedPaper>>() {}.type
-                val loaded: List<GeneratedPaper>? = gson.fromJson(json, type)
-                _papers.value = loaded ?: listOf(SampleData.samplePaper)
+                if (json.isNotBlank()) {
+                    val type = object : TypeToken<List<GeneratedPaper>>() {}.type
+                    val loaded: List<GeneratedPaper>? = gson.fromJson(json, type)
+                    if (!loaded.isNullOrEmpty()) {
+                        _papers.value = loaded
+                        return
+                    }
+                }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            _papers.value = listOf(SampleData.samplePaper)
+            val initial = runCatching { listOf(SampleData.samplePaper) }.getOrDefault(emptyList())
+            _papers.value = initial
+            runCatching { saveToFile(initial) }
+        } catch (e: Throwable) {
+            android.util.Log.e("PaperRepository", "Failed to load papers cleanly: ${e.message}", e)
+            _papers.value = runCatching { listOf(SampleData.samplePaper) }.getOrDefault(emptyList())
         }
     }
 
