@@ -14,7 +14,6 @@ android {
         versionCode = 2
         versionName = "1.1.0"
         multiDexEnabled = true
-        setProperty("archivesBaseName", "PaperGenius-AI-v1.1")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
