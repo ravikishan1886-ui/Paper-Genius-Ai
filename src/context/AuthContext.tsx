@@ -20,6 +20,7 @@ import {
   orderBy,
 } from 'firebase/firestore';
 import { auth, db, isFirebaseConfigured } from '../lib/firebase';
+import { handleFirestoreError, OperationType } from '../lib/firebaseErrors';
 import { GeneratedPaper } from '../types/paper';
 import { getSavedPapers, savePaper as saveLocalPaper, deletePaper as deleteLocalPaper, clearAllLocalPapers } from '../utils/storage';
 
@@ -179,6 +180,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const fetchUserPapers = async (): Promise<GeneratedPaper[]> => {
     if (isFirebaseConfigured && auth && db && auth.currentUser) {
+      const papersPath = `users/${auth.currentUser.uid}/papers`;
       try {
         const papersRef = collection(db, 'users', auth.currentUser.uid, 'papers');
         const q = query(papersRef, orderBy('createdAt', 'desc'));
@@ -188,8 +190,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           papers.push(d.data() as GeneratedPaper);
         });
         return papers;
-      } catch (err) {
-        console.warn('Could not read from Firestore, falling back to local:', err);
+      } catch (err: any) {
+        if (err?.code === 'permission-denied' || err?.message?.includes('permission')) {
+          try {
+            handleFirestoreError(err, OperationType.GET, papersPath);
+          } catch (e) {
+            console.warn('Firestore security notice:', e);
+          }
+        } else {
+          console.warn('Could not read from Firestore, falling back to local:', err);
+        }
       }
     }
     return getSavedPapers();
@@ -198,6 +208,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const saveUserPaper = async (paper: GeneratedPaper): Promise<void> => {
     saveLocalPaper(paper);
     if (isFirebaseConfigured && auth && db && auth.currentUser) {
+      const paperPath = `users/${auth.currentUser.uid}/papers/${paper.id}`;
       try {
         const paperDocRef = doc(db, 'users', auth.currentUser.uid, 'papers', paper.id);
         await setDoc(paperDocRef, {
@@ -205,8 +216,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           userId: auth.currentUser.uid,
           updatedAt: new Date().toISOString(),
         });
-      } catch (err) {
-        console.warn('Could not write to Firestore, paper is kept in local cache:', err);
+      } catch (err: any) {
+        if (err?.code === 'permission-denied' || err?.message?.includes('permission')) {
+          try {
+            handleFirestoreError(err, OperationType.WRITE, paperPath);
+          } catch (e) {
+            console.warn('Firestore security notice:', e);
+          }
+        } else {
+          console.warn('Could not write to Firestore, paper is kept in local cache:', err);
+        }
       }
     }
   };
@@ -214,11 +233,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const deleteUserPaper = async (paperId: string): Promise<void> => {
     deleteLocalPaper(paperId);
     if (isFirebaseConfigured && auth && db && auth.currentUser) {
+      const paperPath = `users/${auth.currentUser.uid}/papers/${paperId}`;
       try {
         const paperDocRef = doc(db, 'users', auth.currentUser.uid, 'papers', paperId);
         await deleteDoc(paperDocRef);
-      } catch (err) {
-        console.warn('Could not delete from Firestore:', err);
+      } catch (err: any) {
+        if (err?.code === 'permission-denied' || err?.message?.includes('permission')) {
+          try {
+            handleFirestoreError(err, OperationType.DELETE, paperPath);
+          } catch (e) {
+            console.warn('Firestore security notice:', e);
+          }
+        } else {
+          console.warn('Could not delete from Firestore:', err);
+        }
       }
     }
   };
