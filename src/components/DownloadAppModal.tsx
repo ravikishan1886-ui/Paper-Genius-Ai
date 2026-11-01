@@ -55,7 +55,7 @@ export const DownloadAppModal: React.FC<DownloadAppModalProps> = ({
     // Trigger download
     const link = document.createElement('a');
     link.href = '/api/download-apk';
-    link.download = 'PaperGenius-AI.apk';
+    link.download = 'PaperGenius-AI-v1.1.apk';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -174,36 +174,36 @@ export const DownloadAppModal: React.FC<DownloadAppModalProps> = ({
                       1
                     </span>
                     <h4 className="font-bold text-slate-900 text-sm">
-                      Direct APK File (For All Android Phones)
+                      New APK v1.1.0 (Build 2) • All Android Phones
                     </h4>
                   </div>
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                    Recommended
+                    Latest v1.1.0
                   </span>
                 </div>
 
                 <p className="text-xs text-slate-600">
-                  Direct Android package (16.0 MB, pure <code>.apk</code> format). Compatible with Xiaomi, Redmi, Samsung, OnePlus, Vivo, Oppo, Realme, Motorola, Google Pixel, and all Android devices (Android 8.0 to 15+).
+                  Brand new signed release package (16.0 MB, pure <code>.apk</code> format). Edge-to-Edge compliant and tested on Android 15 &amp; OnePlus OxygenOS 15, Samsung, Xiaomi, Pixel, Vivo, Oppo, and all devices (Android 8.0 to 15+).
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
                   <a
                     href="/api/download-apk"
-                    download="PaperGenius-AI.apk"
+                    download="PaperGenius-AI-v1.1.apk"
                     className="flex-1 py-3 px-4 rounded-xl font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-center"
                   >
                     <Download className="w-4 h-4" />
-                    <span>Download PaperGenius-AI.apk (16 MB)</span>
+                    <span>Download PaperGenius-AI-v1.1.apk (16 MB)</span>
                   </a>
 
                   <a
-                    href="https://github.com/ravikishan1886-ui/Paper-Genius-Ai/releases/download/v1.0.0/app-debug.apk"
+                    href="https://github.com/ravikishan1886-ui/Paper-Genius-Ai/releases/tag/v1.1.0"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="py-3 px-3 rounded-xl font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 transition-colors flex items-center justify-center gap-1.5 text-xs text-center"
                     title="Direct GitHub Mirror Download"
                   >
-                    <span>GitHub Mirror</span>
+                    <span>GitHub v1.1.0</span>
                     <ExternalLink className="w-3 h-3 text-slate-400" />
                   </a>
                 </div>

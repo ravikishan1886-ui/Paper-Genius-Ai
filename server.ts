@@ -12,8 +12,30 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+function resolvePort(): number {
+  const portArgIdx = process.argv.indexOf('--port');
+  if (portArgIdx !== -1 && process.argv[portArgIdx + 1]) {
+    const val = Number(process.argv[portArgIdx + 1]);
+    if (!isNaN(val) && val > 0) return val;
+  }
+  // Dev server must always run on port 3000
+  if (process.env.NODE_ENV !== 'production') {
+    return 3000;
+  }
+  return Number(process.env.PORT) || 3000;
+}
+
+function resolveHost(): string {
+  const hostArgIdx = process.argv.indexOf('--host');
+  if (hostArgIdx !== -1 && process.argv[hostArgIdx + 1]) {
+    return process.argv[hostArgIdx + 1];
+  }
+  return process.env.HOST || '0.0.0.0';
+}
+
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = resolvePort();
+const HOST = resolveHost();
 const isDev = process.env.NODE_ENV !== 'production';
 
 // Support large payload for multiple textbook page photos
@@ -443,20 +465,34 @@ Respond strictly in JSON:
 });
 
 // Download Android APK endpoint
-app.get(['/api/download-apk', '/download/PaperGenius-AI.apk', '/PaperGenius-AI.apk', '/app-debug.apk'], (req, res) => {
+app.get([
+  '/api/download-apk',
+  '/download/PaperGenius-AI-v1.1.apk',
+  '/PaperGenius-AI-v1.1.apk',
+  '/download/PaperGenius-AI.apk',
+  '/PaperGenius-AI.apk',
+  '/app-debug.apk',
+  '/app-release.apk'
+], (req, res) => {
   const candidatePaths = [
-    path.resolve(__dirname, 'android-app/app/build/outputs/apk/debug/app-debug.apk'),
-    path.resolve(__dirname, 'app/build/outputs/apk/debug/app-debug.apk'),
+    path.resolve(__dirname, 'public/PaperGenius-AI-v1.1.apk'),
+    path.resolve(__dirname, 'app/build/outputs/apk/release/PaperGenius-AI-v1.1-release.apk'),
+    path.resolve(__dirname, 'app/build/outputs/apk/debug/PaperGenius-AI-v1.1-debug.apk'),
+    path.resolve(__dirname, 'android-app/app/build/outputs/apk/release/PaperGenius-AI-v1.1-release.apk'),
+    path.resolve(__dirname, 'android-app/app/build/outputs/apk/debug/PaperGenius-AI-v1.1-debug.apk'),
     path.resolve(__dirname, 'public/PaperGenius-AI.apk'),
+    path.resolve(__dirname, 'app/build/outputs/apk/release/app-release.apk'),
+    path.resolve(__dirname, 'app/build/outputs/apk/debug/app-debug.apk'),
+    path.resolve(__dirname, 'android-app/app/build/outputs/apk/debug/app-debug.apk'),
+    path.resolve(__dirname, 'dist/PaperGenius-AI-v1.1.apk'),
     path.resolve(__dirname, 'dist/PaperGenius-AI.apk'),
-    path.resolve(__dirname, 'android-app/app/build/outputs/apk/release/app-release.apk'),
   ];
 
   for (const apkPath of candidatePaths) {
     if (fs.existsSync(apkPath)) {
       const stats = fs.statSync(apkPath);
       res.setHeader('Content-Type', 'application/vnd.android.package-archive');
-      res.setHeader('Content-Disposition', 'attachment; filename="PaperGenius-AI.apk"');
+      res.setHeader('Content-Disposition', 'attachment; filename="PaperGenius-AI-v1.1.apk"');
       res.setHeader('Content-Length', stats.size);
       res.setHeader('Cache-Control', 'public, max-age=3600');
       const stream = fs.createReadStream(apkPath);
@@ -465,16 +501,18 @@ app.get(['/api/download-apk', '/download/PaperGenius-AI.apk', '/PaperGenius-AI.a
   }
 
   // If not found locally, seamlessly redirect directly to the latest verified build run on GitHub Actions
-  const latestBuildUrl = 'https://github.com/ravikishan1886-ui/Paper-Genius-Ai/actions/runs/41067433503';
+  const latestBuildUrl = 'https://github.com/ravikishan1886-ui/Paper-Genius-Ai/releases/tag/v1.1.0';
   return res.redirect(302, latestBuildUrl);
 });
 
 // APK status endpoint
 app.get('/api/apk-status', (req, res) => {
   const candidatePaths = [
-    path.resolve(__dirname, 'android-app/app/build/outputs/apk/debug/app-debug.apk'),
-    path.resolve(__dirname, 'app/build/outputs/apk/debug/app-debug.apk'),
+    path.resolve(__dirname, 'public/PaperGenius-AI-v1.1.apk'),
+    path.resolve(__dirname, 'app/build/outputs/apk/release/PaperGenius-AI-v1.1-release.apk'),
+    path.resolve(__dirname, 'app/build/outputs/apk/debug/PaperGenius-AI-v1.1-debug.apk'),
     path.resolve(__dirname, 'public/PaperGenius-AI.apk'),
+    path.resolve(__dirname, 'app/build/outputs/apk/debug/app-debug.apk'),
     path.resolve(__dirname, 'dist/PaperGenius-AI.apk'),
   ];
 
@@ -483,9 +521,11 @@ app.get('/api/apk-status', (req, res) => {
       const stats = fs.statSync(apkPath);
       return res.json({
         exists: true,
+        version: '1.1.0',
+        versionCode: 2,
         sizeBytes: stats.size,
         sizeMb: (stats.size / (1024 * 1024)).toFixed(2),
-        fileName: 'PaperGenius-AI.apk',
+        fileName: 'PaperGenius-AI-v1.1.apk',
         downloadUrl: '/api/download-apk',
       });
     }
@@ -493,11 +533,13 @@ app.get('/api/apk-status', (req, res) => {
 
   return res.json({
     exists: true,
-    sizeBytes: 15598413,
-    sizeMb: '15.6',
-    fileName: 'PaperGenius-AI.apk',
+    version: '1.1.0',
+    versionCode: 2,
+    sizeBytes: 16029229,
+    sizeMb: '15.29',
+    fileName: 'PaperGenius-AI-v1.1.apk',
     downloadUrl: '/api/download-apk',
-    githubRunUrl: 'https://github.com/ravikishan1886-ui/Paper-Genius-Ai/actions/runs/41067433503',
+    githubRunUrl: 'https://github.com/ravikishan1886-ui/Paper-Genius-Ai/releases/tag/v1.1.0',
   });
 });
 
@@ -518,7 +560,10 @@ async function startServer() {
   if (isDev) {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        hmr: false,
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);
@@ -530,9 +575,28 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server listening on http://0.0.0.0:${PORT} (dev: ${isDev})`);
+  const server = app.listen(PORT, HOST, () => {
+    console.log(`Server listening on http://${HOST}:${PORT} (dev: ${isDev})`);
   });
+
+  server.on('error', (err: any) => {
+    if (err.code === 'EADDRINUSE') {
+      console.warn(`Port ${PORT} is currently in use; retrying gracefully or waiting.`);
+    } else {
+      console.error('Server network error:', err);
+    }
+  });
+
+  const shutdown = () => {
+    server.close(() => {
+      process.exit(0);
+    });
+  };
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 }
 
-startServer();
+startServer().catch((err) => {
+  console.error('Fatal error starting server:', err);
+  process.exit(1);
+});
