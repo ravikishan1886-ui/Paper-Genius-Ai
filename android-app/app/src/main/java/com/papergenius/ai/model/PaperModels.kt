@@ -160,6 +160,46 @@ data class GeneratedPaper(
     val analyzedTopics: List<String> get() = topicsCovered
     val totalQuestionsCount: Int
         get() = sections.sumOf { it.questions.size }
+
+    constructor(
+        id: String = java.util.UUID.randomUUID().toString(),
+        title: String = "Examination Paper",
+        schoolName: String? = null,
+        examinationHeading: String = "Examination 2026-27",
+        board: EducationBoard = EducationBoard.CBSE,
+        className: String,
+        subject: String = "Science",
+        examType: ExamType = ExamType.ANNUAL,
+        totalMarks: Int = 80,
+        duration: String? = null,
+        durationMinutes: Int = 180,
+        generalInstructions: List<String> = emptyList(),
+        sections: List<PaperSection> = emptyList(),
+        topicsCovered: List<String> = emptyList(),
+        analyzedTopics: List<String> = emptyList(),
+        analysisReport: AnalysisReport? = null,
+        createdAt: String = "",
+        updatedAt: String = "",
+        uploadedPagesCount: Int = 0
+    ) : this(
+        id = id,
+        title = title,
+        schoolName = schoolName,
+        examinationHeading = examinationHeading,
+        board = board,
+        classLevel = className,
+        subject = subject,
+        examType = examType,
+        totalMarks = totalMarks,
+        durationMinutes = duration?.filter { it.isDigit() }?.toIntOrNull()?.let { if (duration.contains("Hour", ignoreCase = true)) it * 60 else it } ?: durationMinutes,
+        generalInstructions = generalInstructions,
+        sections = sections,
+        topicsCovered = if (analyzedTopics.isNotEmpty()) analyzedTopics else topicsCovered,
+        analysisReport = analysisReport,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        uploadedPagesCount = uploadedPagesCount
+    )
 }
 
 data class UploadedPagePhoto(
@@ -173,6 +213,24 @@ data class UploadedPagePhoto(
 ) {
     val uriString: String? get() = localUriString
     val fileSizeBytes: Long get() = sizeBytes
+
+    constructor(
+        id: String = java.util.UUID.randomUUID().toString(),
+        fileName: String,
+        uriString: String? = null,
+        base64Data: String? = null,
+        fileSizeBytes: Long = 0,
+        analysisSummary: String? = null,
+        detectedKeywords: List<String> = emptyList()
+    ) : this(
+        id = id,
+        fileName = fileName,
+        localUriString = uriString,
+        base64Data = base64Data,
+        sizeBytes = fileSizeBytes,
+        analysisSummary = analysisSummary,
+        detectedKeywords = detectedKeywords
+    )
 }
 
 data class GeneratePaperParams(

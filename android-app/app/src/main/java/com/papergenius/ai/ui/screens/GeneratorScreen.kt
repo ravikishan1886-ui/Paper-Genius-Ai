@@ -46,9 +46,9 @@ fun GeneratorScreen(
         uris.forEachIndexed { idx, uri ->
             val photo = UploadedPagePhoto(
                 id = UUID.randomUUID().toString(),
-                uriString = uri.toString(),
                 fileName = "Textbook_Page_${formState.uploadedPhotos.size + idx + 1}.jpg",
-                fileSizeBytes = 350000L,
+                localUriString = uri.toString(),
+                sizeBytes = 350000L,
                 analysisSummary = "Analyzing page concepts...",
                 detectedKeywords = listOf("Textbook Topic", "Definitions")
             )

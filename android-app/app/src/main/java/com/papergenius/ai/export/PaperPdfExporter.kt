@@ -185,7 +185,8 @@ object PaperPdfExporter {
                 }
 
                 // Internal choice question
-                if (question.hasInternalChoice && !question.orQuestion.isNullOrBlank()) {
+                val orQuestionText = question.orQuestion
+                if (question.hasInternalChoice && !orQuestionText.isNullOrBlank()) {
                     y += 4f
                     checkPageBreak(30f)
                     boldPaint.textAlign = Paint.Align.CENTER
@@ -193,7 +194,7 @@ object PaperPdfExporter {
                     boldPaint.textAlign = Paint.Align.LEFT
                     y += 14f
 
-                    val orLines = wrapText(question.orQuestion, textPaint, CONTENT_WIDTH - 45f)
+                    val orLines = wrapText(orQuestionText, textPaint, CONTENT_WIDTH - 45f)
                     for (line in orLines) {
                         checkPageBreak(14f)
                         canvas.drawText(line, MARGIN + 28f, y, textPaint)
@@ -220,8 +221,9 @@ object PaperPdfExporter {
                     canvas.drawText("Q${question.number}. [Answer]", MARGIN, y, boldPaint)
                     y += 13f
 
-                    if (!question.correctAnswer.isNullOrBlank()) {
-                        val ansLines = wrapText(question.correctAnswer, textPaint, CONTENT_WIDTH - 20f)
+                    val ans = question.correctAnswer
+                    if (!ans.isNullOrBlank()) {
+                        val ansLines = wrapText(ans, textPaint, CONTENT_WIDTH - 20f)
                         for (line in ansLines) {
                             checkPageBreak(13f)
                             canvas.drawText(line, MARGIN + 10f, y, textPaint)
@@ -229,8 +231,9 @@ object PaperPdfExporter {
                         }
                     }
 
-                    if (includeMarkingScheme && !question.explanation.isNullOrBlank()) {
-                        val expLines = wrapText("Marking Scheme / Step Explanation: ${question.explanation}", textPaint, CONTENT_WIDTH - 20f)
+                    val exp = question.explanation
+                    if (includeMarkingScheme && !exp.isNullOrBlank()) {
+                        val expLines = wrapText("Marking Scheme / Step Explanation: $exp", textPaint, CONTENT_WIDTH - 20f)
                         for (line in expLines) {
                             checkPageBreak(13f)
                             canvas.drawText(line, MARGIN + 10f, y, textPaint)

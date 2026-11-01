@@ -9,11 +9,11 @@ object SampleData {
             title = "Class X Science Pre-Board Examination 2025",
             schoolName = "Delhi Public Senior Secondary School",
             board = EducationBoard.CBSE,
-            className = "Class 10",
+            classLevel = "Class 10",
             subject = "Science",
             examType = ExamType.PRE_BOARD,
             totalMarks = 80,
-            duration = "3 Hours",
+            durationMinutes = 180,
             generalInstructions = listOf(
                 "This question paper consists of 39 questions in 5 sections.",
                 "All questions are compulsory. However, an internal choice is provided in some questions.",
@@ -199,7 +199,7 @@ object SampleData {
                 )
             ),
             uploadedPagesCount = 3,
-            analyzedTopics = listOf(
+            topicsCovered = listOf(
                 "Chemical Reactions & Energy changes",
                 "Acids, Bases & Litmus indicators",
                 "Concave mirror optics & ray tracing",
@@ -218,21 +218,21 @@ object SampleData {
         UploadedPagePhoto(
             id = "demo-page-1",
             fileName = "Chapter1_Chemical_Reactions_p14.jpg",
-            fileSizeBytes = 420500,
+            sizeBytes = 420500L,
             analysisSummary = "Topic: Types of chemical reactions, endothermic and exothermic processes, calcium carbonate thermal decomposition.",
             detectedKeywords = listOf("Decomposition", "Endothermic", "Exothermic", "CaCO3", "Quicklime")
         ),
         UploadedPagePhoto(
             id = "demo-page-2",
             fileName = "Chapter10_Light_Optics_p162.jpg",
-            fileSizeBytes = 512300,
+            sizeBytes = 512300L,
             analysisSummary = "Topic: Reflection by spherical mirrors, principal focus, focal length, image formation and sign conventions.",
             detectedKeywords = listOf("Concave Mirror", "Focal Length", "Principal Focus", "Real Image", "Magnification")
         ),
         UploadedPagePhoto(
             id = "demo-page-3",
             fileName = "Chapter12_Electricity_p208.jpg",
-            fileSizeBytes = 389100,
+            sizeBytes = 389100L,
             analysisSummary = "Topic: Ohm's law, resistance, resistivity of conductors, series and parallel circuits.",
             detectedKeywords = listOf("Ohm's Law", "Potential Difference", "Current", "Resistivity", "V=IR")
         )
